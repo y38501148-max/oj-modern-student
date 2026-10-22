@@ -6,11 +6,13 @@ import Shell from './Shell.vue';
 import EditorTools from './EditorTools.vue';
 import PersonalHistory from './PersonalHistory.vue';
 import SubmissionView from './SubmissionView.vue';
+import ScoreCell from './ScoreCell.vue';
 import { productTheme } from './theme';
 import { readPage } from './page.mjs';
 import { parseSubmissionSource, trimSourceHeader } from '../submission-source.mjs';
 
 const mounts = new Map<HTMLElement, App>();
+const scoreCells=new WeakMap<HTMLElement,{score?:string|number|null;detail?:string|null;pending:boolean;error?:string}>();
 let shell: ReturnType<typeof readPage> | undefined;
 let personalHistory: {submissionStarted:()=>void;submissionCreated:(row:any)=>void;submissionCancelled:()=>void;refresh:()=>void}|undefined;
 export function pruneMounts() {
@@ -19,6 +21,14 @@ export function pruneMounts() {
 export function mountAction(host: HTMLElement, label: string, handler: () => void, copy = false) {
   const app = createApp({ render: () => h(ConfigProvider,{prefixCls:'oms-ant',theme:productTheme},()=>h(Button,{onClick:handler,size:'small'}, {default:()=>label,...(copy?{icon:()=>h(CopyOutlined)}:{})})) });
   app.mount(host); mounts.set(host, app);
+}
+export function mountScore(host:HTMLElement,submission:any) {
+  const props={score:submission.score,detail:submission.detail,pending:submission.result==='WT' || submission.result==='JG',error:submission.error};
+  const existing=scoreCells.get(host);
+  if(existing){Object.assign(existing,props);return;}
+  const state=reactive(props);scoreCells.set(host,state);
+  const app=createApp({render:()=>h(ConfigProvider,{prefixCls:'oms-ant',theme:productTheme},()=>h(ScoreCell,state))});
+  app.mount(host);mounts.set(host,app);
 }
 export function mountEditorTools(host: HTMLElement, textarea: HTMLTextAreaElement, copy: (text: string) => void) {
   const app = createApp(EditorTools,{textarea,copy}); app.mount(host); mounts.set(host, app);

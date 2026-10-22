@@ -104,6 +104,19 @@
 .oms-history-pagination { display:flex;align-items:center;justify-content:center;gap:12px;padding:12px; }
 .oms-history-pagination>span { color:#60718a;font-size:12px; }
 .oms-history-status { padding:0 14px;color:#60718a;font-size:12px; }
+.oms-score-trigger { margin:0;padding:2px 0;border:0;background:none;color:inherit;font:inherit;cursor:pointer; }
+.oms-score-trigger:hover { text-decoration:underline;text-underline-offset:3px; }
+.oms-score-detail-heading { display:flex;align-items:center;justify-content:space-between;gap:24px; }
+.oms-score-detail-heading>span { color:#60718a;font-size:12px;font-weight:400; }
+.oms-score-detail { max-width:min(520px,calc(100vw - 48px));font-size:12px; }
+.oms-score-detail-scroll { max-height:min(360px,60vh);overflow:auto; }
+.oms-score-detail table { width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;white-space:nowrap; }
+.oms-score-detail :is(th,td) { padding:8px 10px;border-bottom:1px solid #edf0f5;text-align:left; }
+.oms-score-detail th { position:sticky;top:0;background:#f8fafc;color:#60718a;font-weight:500; }
+.oms-score-detail td { color:#40516b; }
+.oms-score-detail .oms-point-pass { color:#168267; }.oms-score-detail .oms-point-fail { color:#b2354d; }
+.oms-score-detail-message { max-height:260px;overflow:auto;margin:8px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;background:transparent;border:0;padding:0; }
+.oms-score-detail-empty { margin:0;color:#60718a; }
 .oms-code-topbar { display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 32px;border-bottom:1px solid #e6ebf2;background:#fff; }
 .oms-code-topbar>a { display:flex;align-items:center;gap:10px;color:#52637e;font-size:13px; }
 .oms-code-topbar>a:first-child { color:#172339;font-size:17px;font-weight:650; }

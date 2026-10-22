@@ -3,7 +3,7 @@ export function formatScore(value) {
   return value === null || value === undefined ? '—' : String(Math.round(Number(value)*10000)/100);
 }
 
-export function enhanceSubmissionHistory(document, href, fetcher = (url,options)=>globalThis.fetch(url,options)) {
+export function enhanceSubmissionHistory(document, href, renderScore, fetcher = (url,options)=>globalThis.fetch(url,options)) {
   const contest = new URL(href).hash.match(/^#\/(\d+)\/problems(?:$|[/?])/);
   if (!contest) return;
   for (const table of document.querySelectorAll('[ng-view] table.table')) {
@@ -35,14 +35,11 @@ export function enhanceSubmissionHistory(document, href, fetcher = (url,options)
         const submissions = new Map((await response.json()).map(submission=>[String(submission.id),submission]));
         for (const {id,row} of rows) {
           if (!row.isConnected) continue;
-          const cell = row.querySelector('.oms-score-cell'), score = submissions.get(id)?.score;
-          const value = formatScore(score);
-          if (cell.textContent!==value) cell.textContent=value;
-          cell.title = value==='—'?'暂无分数':'';
+          renderScore(row.querySelector('.oms-score-cell'),submissions.get(id) || {score:null});
         }
       } catch {
-        for (const {row} of rows) { const cell=row.querySelector('.oms-score-cell'); cell.textContent='—'; cell.title='分数读取失败，刷新页面重试'; }
-      } finally { state.loading=false; enhanceSubmissionHistory(document,document.location.href,fetcher); }
+        for (const {row} of rows)if(row.isConnected)renderScore(row.querySelector('.oms-score-cell'),{score:null,error:'分数读取失败，刷新页面重试'});
+      } finally { state.loading=false; enhanceSubmissionHistory(document,document.location.href,renderScore,fetcher); }
     })();
   }
 }

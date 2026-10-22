@@ -24,7 +24,7 @@ export function parsePersonalHistory(document, userId) {
     const cell=row.querySelector('[id^="submission_id"]');
     const id=cell?.querySelector('a[href*="/submission/"]')?.getAttribute('href').match(/\/submission\/(\d+)/)?.[1] || cell?.textContent.trim();
     const result=row.querySelector('[id^="submission_result"]')?.textContent.trim();
-    return {id,result:verdicts[result] || result,score:row.querySelector('[id^="submission_score"]')?.textContent.trim() || null,time_cost:row.querySelector('[id^="submission_time"]')?.textContent.trim() || '—',memory_cost:row.querySelector('[id^="submission_memory"]')?.textContent.trim() || '—'};
+    return {id,result:verdicts[result] || result,score:row.querySelector('[id^="submission_score"]')?.textContent.trim() || null,time_cost:row.querySelector('[id^="submission_time"]')?.textContent.trim() || '—',memory_cost:row.querySelector('[id^="submission_memory"]')?.textContent.trim() || '—',detail:row.querySelector('[data-content]')?.getAttribute('data-content') || ''};
   }).filter(row=>/^\d+$/.test(row.id));
   const next=[...document.querySelectorAll('[onclick]')].find(node=>node.textContent.trim()==='下一页' && !node.hasAttribute('disabled'));
   return {rows,next:next ? Number(next.getAttribute('onclick').match(/[?&]offset=(\d+)/)?.[1]) || null : null};

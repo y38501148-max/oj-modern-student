@@ -1,5 +1,5 @@
 import { DEFAULT_SETTINGS, REPOSITORY, newerVersion, sampleKind } from './core.mjs';
-import { ensureShell, ensurePersonalHistory, ensureSubmissionView, mountAction, mountEditorTools, pruneMounts } from './ui/mount';
+import { ensureShell, ensurePersonalHistory, ensureSubmissionView, mountAction, mountEditorTools, mountScore, pruneMounts } from './ui/mount';
 import { enhanceSubmissionHistory } from './submissions.mjs';
 import { bindInlineSubmission } from './inline-submission.mjs';
 
@@ -121,7 +121,7 @@ function enhance() {
       if (table.closest('.oms-table-wrap,.modal,.markdown-body') || table.parentElement.closest('table')) continue;
       const wrap = el('div', 'oms-table-wrap'); table.before(wrap); wrap.append(table);
     }
-    enhanceSubmissionHistory(document, location.href);
+    enhanceSubmissionHistory(document, location.href, mountScore);
     const history=ensurePersonalHistory();
     if(settings.submission && history)bindInlineSubmission(document.querySelector('#myModal form'),history);
     for (const control of document.querySelectorAll('[onclick*="change_page("]')) {

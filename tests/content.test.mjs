@@ -109,7 +109,7 @@ test('普通题提交留在题面，防重复点击，并轮询 Waiting → Judg
       assert.deepEqual(JSON.parse(new URL(url,'https://accoding.buaa.edu.cn').searchParams.get('submission_id')),['42']);
       polls++;
       if(polls===1)throw Error('暂时离线');
-      return {ok:true,json:async()=>[{id:42,result:polls===2?'JG':'AC',score:1,time_cost:10,memory_cost:1700},{id:999,result:'WA'}]};
+      return {ok:true,json:async()=>[{id:42,result:polls===2?'JG':'AC',score:1,time_cost:10,memory_cost:1700,detail:'42\nAccepted | 1 * (1 / 1) | 10 ms | 1700 KB'},{id:999,result:'WA'}]};
     }
     if(String(url).includes('/submission?offset=0'))return htmlResponse(created?historyHtml():'<form id="form_of_submission"></form>');
     assert.equal(url,'https://accoding.buaa.edu.cn/problem/1/submit');
@@ -146,6 +146,27 @@ test('普通题提交留在题面，防重复点击，并轮询 Waiting → Judg
   assert.equal(p.window.location.pathname,'/problem/1/index');
   assert.equal(p.document.querySelector('textarea').value,code);
   assert.equal(submits,1);assert.equal(polls,3);
+  table().querySelector('.oms-score-trigger').click();await pause();
+  assert.match(p.document.querySelector('.oms-score-detail-heading').textContent,/1 个数据点/);
+  assert.match(p.document.querySelector('.oms-score-detail').textContent,/100 \/ 100/);
+  await p.close();
+});
+
+test('比赛分数悬停和键盘聚焦显示详情，重新评测后更新内容',async()=>{
+  let detail='42\nAccepted | 1 * (1 / 2) | 1 ms | 1024 KB\nWrong Answer | 0 * (1 / 2) | 2 ms | 2048 KB';
+  const p=page({}, {}, {url:'https://accoding.buaa.edu.cn/contest-ng/index.html#/1331/problems',html:'<div ng-view><div><table class="table"><thead><tr><th>ID</th><th>结果</th><th>时间</th><th>内存</th></tr></thead><tbody><tr><td><a href="/submission/42">42</a></td><td>WA</td><td>2</td><td>2048</td></tr></tbody></table></div></div>',fetch:async()=>({ok:true,json:async()=>[{id:42,score:0.5,result:'WA',detail}]})});
+  await pause();
+  const score=p.document.querySelector('.oms-score-trigger');
+  score.dispatchEvent(new p.window.MouseEvent('mouseenter'));await new Promise(resolve=>setTimeout(resolve,200));
+  assert.match(p.document.querySelector('.oms-score-detail-heading').textContent,/2 个数据点/);
+  assert.match(p.document.querySelector('.oms-score-detail').textContent,/Wrong Answer/);
+  assert.match(p.document.querySelector('.oms-score-detail').textContent,/0 \/ 50/);
+  detail='42\nCompile Error\n<script>alert(1)</script>';
+  p.document.querySelector('tbody tr').cells[1].textContent='CE';await pause();
+  score.focus();await pause();
+  assert.match(p.document.querySelector('.oms-score-detail-message').textContent,/<script>alert\(1\)<\/script>/);
+  assert.equal(p.document.querySelector('.oms-score-detail script'),null);
+  assert.equal(p.document.querySelector('.oms-score-detail table'),null);
   await p.close();
 });
 
