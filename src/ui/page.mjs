@@ -7,6 +7,7 @@ export function readPage(document, href) {
   const titles = { '/': '首页', '/index': '首页', group: '课程', problem: '题库', contest: '比赛', 'contest-ng': '比赛', rank: '排行榜', user: '个人信息', submission: '提交记录', feedback: '反馈', game: '休息一下', recommend: '好书推荐' };
   const section = url.pathname.split('/')[1];
   const home = url.pathname === '/' || url.pathname === '/index';
+  const inContest = section === 'contest-ng' || /^\/contest\/\d+/.test(url.pathname);
   const page = document.querySelector('#page');
   const toLink = a => ({ href: a.getAttribute('href'), title: a.textContent.trim() });
   const solutions = [...(page?.querySelectorAll('a[href*="/createSolution"]') || [])].map(a => {
@@ -21,10 +22,23 @@ export function readPage(document, href) {
   const guides = [...(page?.querySelectorAll('a[href*="Statistics"]') || [])].map(toLink);
   const notices = [...(page?.querySelectorAll('.containing p') || [])].map(p => p.textContent.trim()).filter(text => /注销|暂时关闭注册/.test(text));
   return {
-    home, section: home ? 'home' : section, title: home ? '首页' : titles[section] || '学习空间',
+    home, inContest, section: home ? 'home' : section, title: home ? '首页' : titles[section] || '学习空间',
     links, account: account ? { name: account.textContent.trim().replace(/^欢迎[，,]\s*/, ''), href: account.getAttribute('href') } : null,
     logout: anchors.find(a => a.getAttribute('href') === '/user/logout')?.getAttribute('href'),
     solutions, recommendations, champions, guides, notices,
+    courses: url.pathname === '/group/index' ? readCourses(document) : null,
     terms: document.querySelector('#footer a')?.getAttribute('href') || '',
   };
+}
+
+export function readCourses(document) {
+  return [...document.querySelectorAll('#page .page-header')].map((header, index) => ({
+    key: String(index), title: header.textContent.trim(),
+    groups: [...(header.nextElementSibling?.children || [])].map((item, groupIndex) => ({
+      key: `${index}-${groupIndex}`,
+      title: item.querySelector('thead p')?.textContent.trim() || '',
+      category: item.querySelector('thead .label')?.textContent.trim() || '',
+      courses: [...item.querySelectorAll('tbody a[href]')].map(a => ({href:a.getAttribute('href'),title:a.textContent.trim()})),
+    })).filter(group => group.courses.length),
+  }));
 }

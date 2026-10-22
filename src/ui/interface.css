@@ -14,12 +14,18 @@
 .oms-secondary { display:grid; gap:3px; padding:0 14px; }
 .oms-secondary>a { display:flex; align-items:center; gap:12px; min-height:37px; padding:7px 13px; color:#60718a; font-size:13px; border-radius:7px; }
 .oms-secondary>a:hover { background:#f5f7fb; color:#2563eb; }
-.oms-sidebar-bottom { display:flex; align-items:center; gap:10px; margin:auto 20px 20px; padding-top:18px; border-top:1px solid #edf0f4; color:#60718a!important; font-size:12px; }
+.oms-sidebar-bottom { display:flex; align-items:center; gap:10px; margin:auto 20px 20px; padding:18px 0 0; border:0;border-top:1px solid #edf0f4;background:none;cursor:pointer;text-align:left;color:#60718a!important;font:inherit;font-size:12px; }
 .oms-sidebar-bottom>span:last-child { margin-left:auto; color:#60718a; font-size:11px; }
 .oms-header { position:fixed; inset:0 0 auto 216px; z-index:1010; height:68px; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:0 34px; border-bottom:1px solid #e7ebf2; background:#ffffffed; backdrop-filter:blur(16px); }
 .oms-breadcrumb { display:flex; gap:12px; color:#60718a; font-size:13px; }
 .oms-breadcrumb strong { color:#34445c; font-weight:500; }
 .oms-header-actions,.oms-account { display:flex; align-items:center; gap:12px; }
+.oms-contest-page .oms-header { left:0; }
+.oms-contest-brand { display:flex;align-items:center;gap:10px;color:#172339!important;font-size:17px;font-weight:650;white-space:nowrap; }
+.oms-contest-brand .anticon { color:#2563eb;font-size:22px; }
+.oms-contest-nav { display:flex;align-items:center;gap:8px;margin-right:auto; }
+.oms-contest-nav>a { padding:8px 12px;color:#52627b;white-space:nowrap;font-size:13px; }
+.oms-contest-nav>a:hover { background:#f0f5ff;border-radius:7px;color:#2563eb; }
 .oms-account { color:#46546b!important; font-size:13px; }
 .oms-logout { margin-left:8px; padding-left:18px; border-left:1px solid #e3e8ef; color:#60718a!important; font-size:12px; }
 .oms-ui .oms-mobile-menu { display:none; }
@@ -65,7 +71,19 @@
 .oms-mobile-links { display:grid; gap:10px; }
 .oms-mobile-links>a { display:flex; align-items:center; gap:12px; padding:10px; color:#52627b; }
 .oms-control { display:inline-flex; align-items:center; }
-.oms-copybar { display:flex; justify-content:flex-end; margin:0 0 18px; }
+.oms-courses .oms-page-heading { gap:24px; }
+.oms-course-search { max-width:320px; }
+.oms-course-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px;align-items:start; }
+.oms-course-card { min-width:0;border:1px solid #e7ebf2!important; }
+.oms-course-card .oms-ant-card-head-title { white-space:normal; }
+.oms-course-title { display:flex;flex-wrap:wrap;align-items:center;gap:10px; }
+.oms-course-title strong { font-size:15px;font-weight:600; }
+.oms-course-title .oms-ant-tag { margin:0;font-weight:400; }
+.oms-course-card .oms-ant-card-body { padding:8px 20px 14px; }
+.oms-course-list>a { display:flex;align-items:center;gap:16px;min-height:60px;padding:15px 0;border-bottom:1px solid #edf0f5;color:#34445e;font-size:14px;line-height:1.7; }
+.oms-course-list>a>span:first-child { flex:1;min-width:0;overflow-wrap:anywhere; }
+.oms-course-list>a>span:last-child { flex:none;color:#8293ad;font-size:12px; }
+.oms-course-card .oms-ant-btn { margin-top:10px;color:#60718a; }
 .oms-sample-copy { margin-left:auto; flex:none; font-size:13px; }
 .oms-editor-tools { display:flex; align-items:center; gap:10px; margin:12px 0; }
 .oms-editor-count { margin-right:auto; color:#60718a; font-size:12px; font-variant-numeric:tabular-nums; }
@@ -75,24 +93,22 @@
 .oms-update { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:80px 30px 0 246px; padding:12px 16px; border:1px solid #d6e4ff; border-radius:9px; background:#f1f6ff; color:#48618d; font:13px/1.6 sans-serif; }
 .oms-update>span:first-child { flex:1; }
 .oms-popup-body { width:368px; min-width:368px; margin:0; background:#f5f7fb; }
-.oms-settings { padding:22px; }
-.oms-settings-heading { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
-.oms-settings-heading h1 { margin:0 0 3px; font-size:16px; font-weight:650; letter-spacing:-.4px; line-height:1.4; }
-.oms-settings-heading>div>span { color:#60718a; font-size:11px; }
-.oms-settings-heading>span:last-child { margin-left:auto; }
-.oms-feature-setting { display:flex; align-items:center; justify-content:space-between; gap:18px; min-height:65px; }
-.oms-feature-setting label { display:block; color:#34445d; font-size:14px; font-weight:500; cursor:pointer; }
-.oms-feature-setting small { display:block; margin-top:4px; color:#60718a; font-size:11px; }
-.oms-settings-hint { margin:0; color:#60718a; font-size:11px; }
-.oms-settings-update { margin:14px 0 18px; }
-.oms-update-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-.oms-update-heading strong { font-size:13px; font-weight:600; }
-.oms-settings-update p { margin:12px 0 6px; font-size:13px; color:#60718a; }
-.oms-settings-update small { display:block; color:#60718a; font-size:11px; line-height:1.7; }
-.oms-settings>footer { display:flex; justify-content:space-between; margin-top:20px; font-size:11px; }
-.oms-settings>footer a { color:#60718a; }
+.oms-popup-updates { padding:22px; }
+.oms-popup-updates h1 { font-size:18px;margin:0 0 20px; }
+.oms-update-panel p { margin:0 0 14px;font-size:14px; }
+.oms-update-panel p:first-child { color:#60718a;font-size:12px; }
+.oms-update-panel .oms-update-instructions { margin-top:14px;color:#60718a;font-size:12px; }
+.oms-update-actions { display:flex;gap:10px;margin-top:22px; }
+.oms-personal-history { margin-top:22px; }
+.oms-personal-history-heading { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px; }
+.oms-history-pagination { display:flex;align-items:center;justify-content:center;gap:12px;padding:12px; }
+.oms-history-pagination>span { color:#60718a;font-size:12px; }
+.oms-history-status { padding:0 14px;color:#60718a;font-size:12px; }
 @media(min-width:1650px) { .oms-dashboard { margin-right:auto; } }
 @media(max-width:1100px) { .oms-dashboard-grid { grid-template-columns:minmax(0,1fr) 300px; gap:18px; } .oms-dashboard { padding-inline:24px; } .oms-shortcut { padding:17px 15px; gap:11px; } .oms-row-action { font-size:0; } .oms-row-action>span { font-size:12px; } .oms-recommendations { grid-template-columns:1fr; } }
 @media(max-width:900px) { .oms-sidebar { width:186px; } .oms-brand { padding-inline:17px; font-size:16px; } .oms-header { left:186px; padding-inline:22px; } .oms-dashboard { margin-left:186px; } .oms-dashboard-grid { grid-template-columns:minmax(0,1fr); } .oms-home-aside { grid-template-columns:1fr 1fr; } }
 @media(max-width:680px) { .oms-sidebar { display:none; } .oms-header { left:0; height:60px; padding:0 16px; } .oms-ui .oms-mobile-menu { display:inline-flex; } .oms-breadcrumb { margin-right:auto; gap:8px; } .oms-breadcrumb>span:first-child { display:none; } .oms-breadcrumb>span:nth-child(2) { display:none; } .oms-account>span:last-child,.oms-logout { display:none; } .oms-dashboard { margin-left:0; padding:82px 16px 20px; } .oms-page-heading { margin-bottom:18px; } .oms-page-heading h1 { font-size:24px; } .oms-shortcuts { gap:9px; margin-bottom:18px; } .oms-shortcut { flex-direction:column; align-items:flex-start; padding:14px 12px; gap:11px; } .oms-shortcut>span:last-child,.oms-shortcut small { display:none; } .oms-shortcut strong { font-size:13px; } .oms-shortcut-icon { width:34px; height:34px; font-size:18px; } .oms-home-main,.oms-home-aside { gap:18px; grid-template-columns:1fr; } .oms-home-footer { flex-wrap:wrap; } .oms-update { margin:72px 16px 0; } }
 @media(prefers-reduced-motion:reduce) { .oms-ui *,html.oms-theme * { transition:none!important; animation:none!important; scroll-behavior:auto!important; } }
+@media(max-width:680px) { .oms-courses .oms-page-heading { align-items:stretch;flex-direction:column;gap:16px; }.oms-course-search { max-width:none; }.oms-course-grid { gap:16px; } }
+@media(max-width:1100px) { .oms-contest-nav { gap:0; }.oms-contest-nav>a { padding-inline:8px; }.oms-contest-brand { font-size:14px; } }
+@media(max-width:850px) { .oms-contest-page .oms-header { height:auto;min-height:68px;flex-wrap:wrap;padding-block:12px;gap:8px 12px; }.oms-contest-nav { order:3;width:100%;overflow-x:auto;margin:0; }.oms-contest-page .oms-native-root { padding-top:134px; }.oms-contest-page .oms-mobile-menu { display:none; }.oms-contest-page .oms-header-actions { margin-left:auto; } }

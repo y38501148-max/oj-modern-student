@@ -1,5 +1,6 @@
-import { DEFAULT_SETTINGS, REPOSITORY, newerVersion, sampleKind, statementMarkdown } from './core.mjs';
-import { ensureShell, mountAction, mountEditorTools, pruneMounts } from './ui/mount';
+import { DEFAULT_SETTINGS, REPOSITORY, newerVersion, sampleKind } from './core.mjs';
+import { ensureShell, ensurePersonalHistory, mountAction, mountEditorTools, pruneMounts } from './ui/mount';
+import { enhanceSubmissionHistory } from './submissions.mjs';
 
 export function mountEnhancements() {
 const el = (tag, className, text) => {
@@ -26,18 +27,6 @@ async function copyText(text) {
   catch { toast('复制失败，请允许剪贴板访问后重试'); }
 }
 function enhanceStatement(root) {
-  if (!root.querySelector('.oms-copybar')) {
-    const bar = ui(el('div', 'oms-copybar'));
-    bar.append(button('复制题面 Markdown', () => {
-      let text = statementMarkdown(root, location.href);
-      if (!root.querySelector('.problem-title')) {
-        const title = root.closest('[class*="col-"]')?.querySelector('.problem-title')?.textContent.trim().replace(/\s+/g, ' ');
-        if (title) text = '# ' + title + '\n\n' + text;
-      }
-      void copyText(text);
-    }));
-    root.prepend(bar);
-  }
   // Math-rendered sample numbers are normalized from their source, not visual duplicates.
   let kind = null, sampleHeading = null;
   for (const node of root.querySelectorAll('h1,h2,h3,h4,h5,h6,pre')) {
@@ -105,17 +94,46 @@ function enhance() {
     ensureShell(chrome.runtime.getManifest().version);
     for (const page of document.querySelectorAll('#page,[ng-view]')) {
       const columns = [...page.children].filter(node => node.matches('div[class*="col-"]'));
-      if (columns.length >= 2 && columns.some(node => node.querySelector('.markdown-body'))) {
+      const inContest = document.documentElement.classList.contains('oms-contest-page');
+      if (columns.length >= 2 && (inContest || columns.some(node => node.querySelector('.markdown-body')))) {
         page.classList.add('oms-columns');
         columns.forEach(node => {
-          node.classList.toggle('oms-main', !!node.querySelector('.markdown-body'));
+          node.classList.toggle('oms-main', !!node.querySelector('.markdown-body') || inContest && node.matches('.col-lg-8,.col-lg-10'));
           node.classList.toggle('oms-empty-aside', !node.textContent.trim() && !node.querySelector('input,button,a,img'));
         });
+        if (inContest) {
+          const navigation = columns.find(node=>node.querySelector('.form-horizontal .list-group-item'));
+          if (navigation) {
+            navigation.classList.add('oms-contest-toolbar');
+            navigation.querySelector('[ng-include="\'detail/time.html\'"]')?.classList.add('oms-contest-clock');
+            const questions = navigation.querySelector('[ng-include="\'detail/detail-question.html\'"]');
+            if (questions && !questions.closest('details')) {
+              const details=el('details','oms-contest-notices'), summary=el('summary','','公告与提问');
+              questions.before(details);details.append(summary,questions);
+            }
+          }
+        }
       }
     }
     for (const table of document.querySelectorAll('#page table.table,[ng-view] table.table')) {
       if (table.closest('.oms-table-wrap,.modal,.markdown-body') || table.parentElement.closest('table')) continue;
       const wrap = el('div', 'oms-table-wrap'); table.before(wrap); wrap.append(table);
+    }
+    enhanceSubmissionHistory(document, location.href);
+    ensurePersonalHistory();
+    for (const control of document.querySelectorAll('[onclick*="change_page("]')) {
+      control.classList.add('oms-pagination-button');
+      const current=control.parentElement;
+      current?.classList.add('oms-native-pagination');
+      for(const sibling of current?.children || []) if (sibling.matches('.btn-success')) {sibling.classList.add('oms-pagination-current');sibling.setAttribute('aria-current','page');}
+      if(control.hasAttribute('disabled')) {control.setAttribute('aria-disabled','true');control.setAttribute('tabindex','-1');}
+    }
+    if (document.documentElement.classList.contains('oms-contest-page')) {
+      const history=document.querySelector('.oms-submission-aside');
+      const submit=document.querySelector('.oms-main [data-target="#myModal"]');
+      if (history && submit && !submit.parentElement.querySelector('.oms-history-link')) {
+        const control=button('提交记录',()=>history.scrollIntoView({behavior:'smooth',block:'start'}));control.classList.add('oms-history-link');submit.before(control);
+      }
     }
   }
   if (settings.copy) for (const root of document.querySelectorAll('.markdown-body:not(textarea)')) {

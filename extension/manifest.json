@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "OJ Modern Student",
-  "version": "0.2.0",
-  "description": "北航 Accoding 学生端：界面美化、题面和样例复制、提交界面优化。",
+  "version": "0.2.1",
+  "description": "北航 Accoding 学生端：界面美化、样例复制、提交界面优化。",
   "homepage_url": "https://github.com/y38501148-max/oj-modern-student",
   "permissions": [
     "storage",
@@ -17,7 +17,7 @@
     "type": "module"
   },
   "action": {
-    "default_title": "OJ Modern Student",
+    "default_title": "检查更新 · OJ Modern Student",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/16.png",

@@ -33,7 +33,7 @@ test('复制样例保持所有空白，异步更换题面后只复制当前题',
   const root = p.document.querySelector('.markdown-body');
   root.innerHTML = '<h1 class="problem-title">第二题</h1><h2>输入样例</h2><pre>new\n</pre>';
   await pause();
-  assert.equal(root.querySelectorAll('.oms-copybar').length,1);
+  assert.equal(p.document.querySelectorAll('.oms-copybar').length,0);
   assert.equal(root.querySelectorAll('.oms-sample-copy').length,1);
   root.querySelector('.oms-sample-copy button').click(); await pause();
   assert.equal(p.copies[1], 'new\n');

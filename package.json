@@ -1,6 +1,6 @@
 {
   "name": "oj-modern-student",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "description": "北航 Accoding 学生端浏览器扩展",

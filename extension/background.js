@@ -41,11 +41,11 @@ chrome.runtime.onUpdateAvailable.addListener(details => {
   void chrome.action.setBadgeText({ text: 'NEW' });
 });
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
-  // Only extension pages can change settings or force a network check.
+  // Settings writes are restricted to extension pages.
   const fromPopup = sender.url?.startsWith(chrome.runtime.getURL(''));
   const run = async () => {
     if (message.type === 'state') { void checkUpdate(); return state(); }
-    if (message.type === 'check' && fromPopup) return checkUpdate(true);
+    if (message.type === 'check') return checkUpdate(true);
     if (message.type === 'settings' && fromPopup) {
       const settings = Object.fromEntries(Object.keys(DEFAULT_SETTINGS).map(key => [key, message.settings?.[key] !== false]));
       await chrome.storage.local.set({ settings });
@@ -55,7 +55,7 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
       await chrome.storage.local.set({ dismissedVersion: message.version });
       return { ok: true };
     }
-    if (message.type === 'store-check' && fromPopup && CHANNEL === 'edge') return chrome.runtime.requestUpdateCheck();
+    if (message.type === 'store-check' && CHANNEL === 'edge') return chrome.runtime.requestUpdateCheck();
     throw new Error('不支持的操作');
   };
   run().then(respond, error => respond({ error: error.message }));

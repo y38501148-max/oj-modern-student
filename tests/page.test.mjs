@@ -20,3 +20,13 @@ test('首页从原站读取题目、榜单和链接，账号使用右侧显示�
   assert.equal(page.terms,'https://example.org/terms');
   dom.window.close();
 });
+test('课程页保留原站分组、完整课程名和跳转地址',()=>{
+  const group=`<div class="col-md-3"><table><thead><tr><td><p>C语言程序设计</p><span class="label">工科大类</span></td></tr></thead><tbody><tr><td><a href="/group/123/index">2026级-航空航天大类-C语言程序设计</a></td></tr></tbody></table></div>`;
+  const dom=new JSDOM(`<div id="page"><div><div class="page-header"><h2>进行中课程</h2></div><div class="container-fluid">${group}</div><div class="page-header"><h2>以往课程</h2></div><div class="container-fluid">${group}</div></div></div>`);
+  const page=readPage(dom.window.document,'https://accoding.buaa.edu.cn/group/index');
+  assert.equal(page.courses.length,2);
+  assert.equal(page.courses[0].title,'进行中课程');
+  assert.equal(page.courses[1].title,'以往课程');
+  assert.deepEqual(page.courses[0].groups[0],{key:'0-0',title:'C语言程序设计',category:'工科大类',courses:[{href:'/group/123/index',title:'2026级-航空航天大类-C语言程序设计'}]});
+  dom.window.close();
+});

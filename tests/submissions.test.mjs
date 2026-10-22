@@ -1,0 +1,30 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { JSDOM } from 'jsdom';
+import { enhanceSubmissionHistory, formatScore } from '../src/submissions.mjs';
+const href='https://accoding.buaa.edu.cn/contest-ng/index.html#/1085/problems';
+const row=(id,result)=>`<tr><td><a href="/submission/${id}">${id}</a></td><td>${result}</td><td>5</td><td>1024</td></tr>`;
+const settle=()=>new Promise(resolve=>setTimeout(resolve,0));
+test('提交记录在结果后显示真实分数，保留零分，切题和重评后更新', async()=>{
+  const dom=new JSDOM(`<div ng-view><div><table class="table"><thead><tr><td>ID</td><td>结果</td><td>时间</td><td>内存</td></tr></thead><tbody>${row(1,'WA')}${row(2,'AC')}${row(3,'WT')}</tbody></table></div></div>`,{url:href});
+  const document=dom.window.document;
+  let scores=[{id:1,score:0},{id:2,score:0.755},{id:3,score:null}],requests=0;
+  const fetcher=async url=>{assert.equal(url,'/api/contests/1085/submissions');requests++;return {ok:true,json:async()=>scores};};
+  enhanceSubmissionHistory(document,href,fetcher); await settle();
+  const table=document.querySelector('table');
+  assert.deepEqual([...table.tHead.rows[0].cells].map(cell=>cell.textContent),['ID','结果','分数','时间 ms','内存 KB']);
+  assert.deepEqual([...table.querySelectorAll('tbody .oms-score-cell')].map(cell=>cell.textContent),['0','75.5','—']);
+  enhanceSubmissionHistory(document,href,fetcher); await settle(); assert.equal(requests,1);
+  scores=[{id:1,score:0.2},{id:4,score:1}];
+  table.tBodies[0].innerHTML=row(1,'PE')+row(4,'AC');
+  enhanceSubmissionHistory(document,href,fetcher); await settle();
+  assert.deepEqual([...table.querySelectorAll('tbody .oms-score-cell')].map(cell=>cell.textContent),['20','100']);
+  assert.equal(table.tHead.rows[0].cells.length,5); assert.equal(requests,2);
+  dom.window.close();
+});
+test('分数按百分制最多保留两位小数，长小数不会挤占相邻列',()=>{
+  assert.equal(formatScore(0.3333333333333333),'33.33');
+  assert.equal(formatScore(1),'100');
+  assert.equal(formatScore(0),'0');
+  assert.equal(formatScore(null),'—');
+});

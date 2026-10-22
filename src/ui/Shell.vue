@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { Avatar, Badge, Button, Card, Collapse, ConfigProvider, Drawer, Empty, Menu, Table } from 'ant-design-vue';
-import { ArrowRightOutlined, BookOutlined, CodeOutlined, FileTextOutlined, HomeOutlined, MenuOutlined, ReadOutlined, SettingOutlined, TrophyOutlined } from '@ant-design/icons-vue';
+import { Avatar, Badge, Button, Card, Collapse, ConfigProvider, Drawer, Dropdown, Empty, Menu, Modal, Table } from 'ant-design-vue';
+import { ArrowRightOutlined, BookOutlined, CodeOutlined, FileTextOutlined, HomeOutlined, MenuOutlined, ReadOutlined, ReloadOutlined, TrophyOutlined } from '@ant-design/icons-vue';
 import zhCN from 'ant-design-vue/es/locale/zh_CN';
 import { productTheme } from './theme';
+import Courses from './Courses.vue';
+import UpdatePanel from './UpdatePanel.vue';
 
-const props = defineProps<{ page: any; version: string; settingsUrl: string }>();
+const props = defineProps<{ page: any; version: string }>();
 const open = ref(false);
+const updatesOpen = ref(false);
+function openUpdates() { open.value=false;updatesOpen.value=true; }
 const primary = [
   { key: 'home', label: '首页', href: '/index', icon: HomeOutlined },
   { key: 'group', label: '我的课程', href: '/group/index', icon: ReadOutlined },
@@ -26,7 +30,7 @@ const columns = [
 <template>
   <ConfigProvider prefix-cls="oms-ant" :locale="zhCN" :theme="productTheme">
     <div class="oms-ui">
-      <aside class="oms-sidebar" aria-label="主导航">
+      <aside v-if="!page.inContest" class="oms-sidebar" aria-label="主导航">
         <a class="oms-brand" href="/index"><span class="oms-brand-mark"><CodeOutlined /></span><span>OJ Modern<small>Student</small></span></a>
         <div class="oms-nav-label">学习空间</div>
         <Menu mode="inline" :selected-keys="selected">
@@ -34,14 +38,19 @@ const columns = [
         </Menu>
         <div v-if="secondary.length" class="oms-nav-label oms-nav-more">更多</div>
         <nav class="oms-secondary"><a v-for="link in secondary" :key="link.href" :href="link.href"><FileTextOutlined />{{ link.label }}</a></nav>
-        <a class="oms-sidebar-bottom" :href="settingsUrl" target="_blank"><SettingOutlined />扩展设置<span>v{{ version }}</span></a>
+        <button class="oms-sidebar-bottom" type="button" @click="openUpdates"><ReloadOutlined />检查更新<span>v{{ version }}</span></button>
       </aside>
       <header class="oms-header">
         <Button class="oms-mobile-menu" aria-label="展开导航" type="text" @click="open = true"><MenuOutlined /></Button>
-        <div class="oms-breadcrumb"><span>学习空间</span><span>/</span><strong>{{ page.title }}</strong></div>
+        <a v-if="page.inContest" href="/index" class="oms-contest-brand"><CodeOutlined />OJ Modern</a>
+        <nav v-if="page.inContest" class="oms-contest-nav" aria-label="全站导航"><a v-for="item in primary" :key="item.key" :href="item.href">{{ item.label }}</a><Dropdown v-if="secondary.length" :get-popup-container="(trigger: HTMLElement)=>trigger.parentElement!" :trigger="['click']"><Button type="text">更多</Button><template #overlay><Menu><Menu.Item v-for="link in secondary" :key="link.href"><a :href="link.href">{{ link.label }}</a></Menu.Item></Menu></template></Dropdown><Button type="text" @click="openUpdates"><ReloadOutlined />检查更新</Button></nav>
+        <div v-else class="oms-breadcrumb"><span>学习空间</span><span>/</span><strong>{{ page.title }}</strong></div>
         <div class="oms-header-actions"><a v-if="page.account" :href="page.account.href" class="oms-account"><Avatar :size="30" style="background:#edf2ff;color:#2563eb">{{ page.account.name.slice(-2) }}</Avatar><span>{{ page.account.name }}</span></a><a v-else href="/user/login">登录</a><a v-if="page.logout" :href="page.logout" class="oms-logout">登出</a></div>
       </header>
-      <Drawer v-model:open="open" title="学习空间" placement="left" :width="260" :get-container="false"><nav class="oms-mobile-links"><a v-for="item in primary" :key="item.key" :href="item.href"><component :is="item.icon" />{{ item.label }}</a><a v-for="link in secondary" :key="link.href" :href="link.href">{{ link.label }}</a><a :href="settingsUrl">扩展设置</a></nav></Drawer>
+      <Drawer v-model:open="open" title="学习空间" placement="left" :width="260" :get-container="false"><nav class="oms-mobile-links"><a v-for="item in primary" :key="item.key" :href="item.href"><component :is="item.icon" />{{ item.label }}</a><a v-for="link in secondary" :key="link.href" :href="link.href">{{ link.label }}</a><Button type="text" @click="openUpdates">检查更新</Button></nav></Drawer>
+      <Modal v-model:open="updatesOpen" title="检查更新" :footer="null" :width="420" :get-container="false" destroy-on-close><UpdatePanel v-if="updatesOpen" /></Modal>
+
+      <Courses v-if="page.courses" :sections="page.courses" />
 
       <main v-if="page.home" class="oms-dashboard">
         <div class="oms-page-heading"><div><h1>首页</h1></div></div>
