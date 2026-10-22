@@ -2,8 +2,8 @@
 
 .oms-ui { color:#172339; font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; text-align:left; }
 .oms-ui * { box-sizing:border-box; }
-.oms-ui a:not(.oms-ant-btn) { color:#2563eb; text-decoration:none; }
-.oms-ui a:not(.oms-ant-btn):hover { color:#1749ba; }
+.oms-ui :where(a:not(.oms-ant-btn)) { color:#2563eb; text-decoration:none; }
+.oms-ui :where(a:not(.oms-ant-btn)):hover { color:#1749ba; }
 .oms-ui :is(button,a,input,select):focus-visible { outline:3px solid #93b4ff; outline-offset:3px; }
 .oms-sidebar { position:fixed; inset:0 auto 0 0; z-index:1020; display:flex; flex-direction:column; width:216px; background:#fff; border-right:1px solid #e7ebf2; }
 .oms-brand { display:flex; align-items:center; gap:11px; padding:27px 22px 30px; color:#172339!important; font-size:18px; font-weight:700; letter-spacing:-.5px; line-height:1.2; }
