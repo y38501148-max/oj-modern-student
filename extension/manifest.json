@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "OJ Modern Student",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "北航 Accoding 学生端：界面美化、样例复制、提交界面优化。",
   "homepage_url": "https://github.com/y38501148-max/oj-modern-student",
   "permissions": [
@@ -31,6 +31,19 @@
     "128": "icons/128.png"
   },
   "content_scripts": [
+    {
+      "matches": [
+        "https://accoding.buaa.edu.cn/problem/*",
+        "https://accoding.buaa.edu.cn/contest-ng/*"
+      ],
+      "js": [
+        "math-config.js",
+        "mathjax-svg.js",
+        "math-layout.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_idle"
+    },
     {
       "matches": [
         "https://accoding.buaa.edu.cn/*"

@@ -1,5 +1,5 @@
 import { DEFAULT_SETTINGS, REPOSITORY, newerVersion, sampleKind } from './core.mjs';
-import { ensureShell, ensurePersonalHistory, mountAction, mountEditorTools, pruneMounts } from './ui/mount';
+import { ensureShell, ensurePersonalHistory, ensureSubmissionView, mountAction, mountEditorTools, pruneMounts } from './ui/mount';
 import { enhanceSubmissionHistory } from './submissions.mjs';
 
 export function mountEnhancements() {
@@ -32,7 +32,7 @@ function enhanceStatement(root) {
   for (const node of root.querySelectorAll('h1,h2,h3,h4,h5,h6,pre')) {
     if (/^H\d$/.test(node.tagName)) {
       const heading = node.cloneNode(true);
-      heading.querySelectorAll('[data-oms-ui],.MathJax,.MathJax_Preview,.MathJax_Display').forEach(n => n.remove());
+      heading.querySelectorAll('[data-oms-ui],.MathJax,.MathJax_Preview,.MathJax_Display,.MathJax_SVG,.MathJax_SVG_Display,.MJX_Assistive_MathML').forEach(n => n.remove());
       kind = sampleKind(heading.textContent); sampleHeading = node;
     } else if (kind && !('omsSample' in node.dataset)) {
       node.dataset.omsSample = '';
@@ -91,6 +91,7 @@ function enhance() {
   pruneMounts();
   document.documentElement.classList.toggle('oms-theme', settings.theme);
   if (settings.theme) {
+    ensureSubmissionView(text=>{void copyText(text);});
     ensureShell(chrome.runtime.getManifest().version);
     for (const page of document.querySelectorAll('#page,[ng-view]')) {
       const columns = [...page.children].filter(node => node.matches('div[class*="col-"]'));

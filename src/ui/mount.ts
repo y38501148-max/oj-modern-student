@@ -5,8 +5,10 @@ import { CopyOutlined } from '@ant-design/icons-vue';
 import Shell from './Shell.vue';
 import EditorTools from './EditorTools.vue';
 import PersonalHistory from './PersonalHistory.vue';
+import SubmissionView from './SubmissionView.vue';
 import { productTheme } from './theme';
 import { readPage } from './page.mjs';
+import { parseSubmissionSource, trimSourceHeader } from '../submission-source.mjs';
 
 const mounts = new Map<HTMLElement, App>();
 let shell: ReturnType<typeof readPage> | undefined;
@@ -19,6 +21,18 @@ export function mountAction(host: HTMLElement, label: string, handler: () => voi
 }
 export function mountEditorTools(host: HTMLElement, textarea: HTMLTextAreaElement, copy: (text: string) => void) {
   const app = createApp(EditorTools,{textarea,copy}); app.mount(host); mounts.set(host, app);
+}
+export function ensureSubmissionView(copy:(text:string)=>void) {
+  const id=location.pathname.match(/^\/submission\/(\d+)\/?$/)?.[1];
+  if(!id || document.querySelector('#oms-code-app'))return;
+  const source=document.querySelector<HTMLPreElement>('body>pre'), code=source?.querySelector('code');
+  if(!source || !code)return;
+  const submission=parseSubmissionSource(code.textContent,id);
+  if(!submission)return;
+  trimSourceHeader(code,submission.prefix);
+  const host=document.createElement('div');host.id='oms-code-app';host.dataset.omsUi='';document.body.prepend(host);
+  document.documentElement.classList.add('oms-submission-page');
+  const app=createApp(SubmissionView,{submission,source,copy});app.mount(host);mounts.set(host,app);
 }
 export function ensurePersonalHistory() {
   const problem=location.pathname.match(/^\/problem\/(\d+)\/index\/?$/);

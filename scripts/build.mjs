@@ -19,7 +19,10 @@ const manifest = {
   background: { service_worker: 'background.js', type: 'module' },
   action: { default_title: '检查更新 · OJ Modern Student', default_popup: 'popup.html', default_icon: { 16: 'icons/16.png', 32: 'icons/32.png' } },
   icons: { 16: 'icons/16.png', 32: 'icons/32.png', 48: 'icons/48.png', 128: 'icons/128.png' },
-  content_scripts: [{ matches: ['https://accoding.buaa.edu.cn/*'], css: ['theme.css'], js: ['content.js'], run_at: 'document_idle' }],
+  content_scripts: [
+    {matches:['https://accoding.buaa.edu.cn/problem/*','https://accoding.buaa.edu.cn/contest-ng/*'],js:['math-config.js','mathjax-svg.js','math-layout.js'],world:'MAIN',run_at:'document_idle'},
+    {matches:['https://accoding.buaa.edu.cn/*'],css:['theme.css'],js:['content.js'],run_at:'document_idle'},
+  ],
   content_security_policy: { extension_pages: "script-src 'self'; object-src 'self'" }
 };
 await writeFile(resolve(out, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
@@ -35,6 +38,9 @@ for (const entry of ['content','popup']) {
   });
 }
 for (const name of ['core.mjs','background.js','popup.html']) await copyFile(resolve(root, 'src', name), resolve(out, name));
+for (const name of ['math-config.js','math-layout.js']) await copyFile(resolve(root,'src',name),resolve(out,name));
+await copyFile(resolve(root,'vendor/mathjax2/mathjax-svg.js'),resolve(out,'mathjax-svg.js'));
+await copyFile(resolve(root,'vendor/mathjax2/LICENSE'),resolve(out,'MathJax-LICENSE'));
 await copyFile(resolve(root, 'LICENSE'), resolve(out, 'LICENSE'));
 
 await mkdir(resolve(out, 'icons'), { recursive:true });

@@ -23,6 +23,9 @@ html.oms-theme { --oms-bg:#f5f7fb;--oms-line:#e6ebf2;--oms-ink:#26364d;--oms-mut
 .oms-theme .markdown-body img { max-width:100%;height:auto; }
 .oms-theme .markdown-body pre,.oms-theme #page pre { padding:16px 18px;border:1px solid #e7ecf3;border-radius:8px;background:#f8fafc;color:#40516c;overflow:auto;white-space:pre;font:13px/1.85 ui-monospace,SFMono-Regular,Consolas,monospace; }
 .oms-theme .markdown-body blockquote { padding:12px 18px;border-left:3px solid #bad0fa;background:#f6f9ff;color:#60718a; }
+.oms-theme .markdown-body .MathJax_SVG { color:inherit;font-size:100%;letter-spacing:0; }
+.oms-theme .markdown-body .MathJax_SVG_Display { margin:1.1em 0;max-width:100%;overflow-x:auto;overflow-y:hidden;padding:4px 0; }
+.oms-theme .markdown-body .MathJax_SVG svg { max-width:none; }
 .oms-theme .markdown-body table { display:block;width:max-content;max-width:100%;overflow:auto; }.oms-theme .markdown-body :is(th,td) { padding:8px 14px;border:1px solid var(--oms-line); }
 .oms-theme .form-control { min-height:36px;height:auto;padding:7px 11px;background:#fff;border:1px solid #dce3ee;border-radius:7px;color:#40516b;box-shadow:none;font-size:13px; }
 .oms-theme .form-control:focus { border-color:#94b4fa;box-shadow:0 0 0 3px #edf3ff; }
@@ -85,6 +88,8 @@ textarea.oms-editor { width:100%!important;height:clamp(260px,44vh,480px)!import
 .oms-theme.oms-contest-page a[ng-repeat="problem in Contest.data.problems"] { margin:0 4px 8px 0;min-width:40px; }
 .oms-theme.oms-contest-page a[ng-repeat="problem in Contest.data.problems"].btn-success { background:#eaf7ef;border-color:#b8dbc6;color:#216b43; }
 .oms-theme.oms-contest-page a[ng-repeat="problem in Contest.data.problems"].btn-success.active { background:#d8f0e2;border-color:#86bea0;color:#195c39; }
+.oms-theme.oms-contest-page a[ng-repeat="problem in Contest.data.problems"].btn-danger { background:#fff0f2;border-color:#edb8c2;color:#b2354d; }
+.oms-theme.oms-contest-page a[ng-repeat="problem in Contest.data.problems"].btn-danger:is(:hover,.active) { background:#fbdce2;border-color:#d98c9e;color:#93293e; }
 .oms-theme.oms-contest-page .oms-columns>.oms-submission-aside { grid-column:3;grid-row:1;scroll-margin-top:90px; }
 .oms-history-link { margin-right:10px; }
 .oms-theme .oms-contest-notices { grid-column:1/-1;border-top:1px solid var(--oms-line);padding-top:10px;color:var(--oms-muted);font-size:12px; }

@@ -7,8 +7,8 @@ const pause = () => new Promise(resolve => setTimeout(resolve, 90));
 const pages = new Set();
 afterEach(async()=>{for(const close of [...pages])await close();});
 const statement = '<h1 class="problem-title">加法</h1><h2>输入样例1</h2><pre><code>  1\t2\n\n</code></pre><h2>输出样例1</h2><pre><code>3\n</code></pre>';
-function page(settings = {}, state = {}) {
-  const dom = new JSDOM(`<div id="page"><div class="col-lg-2"></div><div class="col-lg-8"><div class="markdown-body">${statement}</div></div><div class="col-lg-2"><div class="modal"><div class="modal-dialog"><form action="/problem/1/submit" method="post"><textarea name="code"></textarea><button type="submit">提交</button></form></div></div></div></div>`, { url:'https://accoding.buaa.edu.cn/problem/1/index',runScripts:'outside-only',pretendToBeVisual:true });
+function page(settings = {}, state = {}, options = {}) {
+  const dom = new JSDOM(options.html || `<div id="page"><div class="col-lg-2"></div><div class="col-lg-8"><div class="markdown-body">${statement}</div></div><div class="col-lg-2"><div class="modal"><div class="modal-dialog"><form action="/problem/1/submit" method="post"><textarea name="code"></textarea><button type="submit">提交</button></form></div></div></div></div>`, { url:options.url || 'https://accoding.buaa.edu.cn/problem/1/index',runScripts:'outside-only',pretendToBeVisual:true });
   const copies = [], messages = [];
   const observers = [];
   const NativeObserver = dom.window.MutationObserver;
@@ -79,4 +79,17 @@ test('更新提示不刷新或改变编辑器，同版稍后不再显示', async
   const dismissed = page({}, {update:{version:'0.2.0'},dismissedVersion:'0.2.0'}); await pause();
   assert.equal(dismissed.document.querySelector('#oms-update'),null);
   await dismissed.close();
+});
+
+test('查看代码页复制纯源码，保留缩进和换行并移除原站提交头', async()=>{
+  const code='/* 用户自己的注释 */\nint main() {\n    return 0;\n}\n';
+  const header='/* \n Author: 测试同学\n Result: AC\tSubmission_id: 42\n Created at: Thu Oct 22 2026 00:10:46 GMT+0800 (China Standard Time)\n Problem_id: 7\tTime: 10\tMemory: 1700\n*/\n\n';
+  const p=page({}, {}, {url:'https://accoding.buaa.edu.cn/submission/42',html:'<pre><code>'+(header+code)+'</code></pre>'});
+  await pause();
+  assert.equal(p.document.querySelectorAll('#oms-code-app').length,1);
+  assert.equal(p.document.querySelector('.oms-source-pre code').textContent,code);
+  p.document.querySelector('.oms-code-card .oms-ant-btn-primary').click();await pause();
+  assert.equal(p.copies[0],code);
+  assert.match(p.document.querySelector('.oms-code-meta').textContent,/题目 #7/);
+  await p.close();
 });
