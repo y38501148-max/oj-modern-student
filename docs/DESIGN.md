@@ -1,13 +1,16 @@
-# OJ Modern Student 界面
+# 学生端界面
 
-沿用 Accoding Modern 的浅灰背景、白色内容面板、蓝色操作和系统字体。保留原站节点、链接、Bootstrap 弹窗及 Angular 绑定。
+使用 Vue 3、TypeScript、Ant Design Vue 4。Vite 编译 Vue 单文件组件，生成 MV3 扩展可直接运行的本地脚本。
 
-ui-ux-pro-max 的 `education dashboard minimal` 检索中 Minimalism & Swiss Style 适合本项目；营销落地页区块不适用。使用清晰层级、可见焦点、局部横向滚动和窄屏纵向布局。
+主题通过 ConfigProvider 统一配置，组件前缀为 `oms-ant`。导航使用 Menu，首页使用 Card、Table、Badge、Collapse，设置面板使用 Switch 和 Alert，复制与编辑工具使用 Button、Select。
 
-- 背景 `#f6f8fa`，正文 `#182536`，次要文字 `#59697b`，操作 `#275ad6`。
-- 正文系统中文字体；代码系统等宽字体；没有外部字体请求。
-- 普通题目采用内容与操作双栏；比赛题目保留比赛导航、题面和提交记录。
-- 题面复制在题面顶部；样例复制在对应代码块内。
-- 提交弹窗保留原站的语言选项、提示、校验及提交按钮。
-- 更新使用页内提示，不自动刷新正在编辑的页面。
-- 首版仅适配直连学生站 `https://accoding.buaa.edu.cn`，管理端 4000 端口不启用。
+- 白色侧栏宽 216px，顶部导航高 68px，内容背景为 `#f5f7fb`。
+- 主色 `#2563eb`，正文 `#172339`，边框 `#e3e8ef`。
+- 首页读取原页面中的题目、榜单、通知和链接，按任务分组展示。
+- 题面保留原节点和公式；复制按钮位于对应样例标题右侧，代码框仅包含样例。
+- 比赛页保留 Angular 绑定，提交表单沿用原站语言选项和提交校验。
+- 提交弹窗主体可滚动，底部操作区保持可见。
+- 680px 以下隐藏常驻侧栏，使用 Drawer 导航；宽表局部滚动。
+- 页脚采用正常文档流。界面文案使用动作、状态和必要规则。
+
+布局参考 ui-ux-pro-max 的 Minimalism & Swiss Style，并按 Ant Design Vue 的 ConfigProvider 主题规则实现。

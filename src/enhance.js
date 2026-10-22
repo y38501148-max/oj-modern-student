@@ -1,6 +1,7 @@
-// Built together with core.mjs inside the extension's isolated content-script world.
-if (!isStudentSite(location.href) || globalThis.__ojModernStudent) return;
-globalThis.__ojModernStudent = true;
+import { DEFAULT_SETTINGS, REPOSITORY, newerVersion, sampleKind, statementMarkdown } from './core.mjs';
+import { ensureShell, mountAction, mountEditorTools, pruneMounts } from './ui/mount';
+
+export function mountEnhancements() {
 const el = (tag, className, text) => {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -9,8 +10,8 @@ const el = (tag, className, text) => {
 };
 const ui = node => { node.dataset.omsUi = ''; return node; };
 const button = (text, handler) => {
-  const node = ui(el('button', 'oms-button', text));
-  node.type = 'button'; node.addEventListener('click', handler); return node;
+  const node = ui(el('span', 'oms-control oms-ui'));
+  mountAction(node,text,handler,text.startsWith('复制')); return node;
 };
 let settings = { ...DEFAULT_SETTINGS };
 let toastTimer;
@@ -38,13 +39,14 @@ function enhanceStatement(root) {
     root.prepend(bar);
   }
   // Math-rendered sample numbers are normalized from their source, not visual duplicates.
-  let kind = null;
+  let kind = null, sampleHeading = null;
   for (const node of root.querySelectorAll('h1,h2,h3,h4,h5,h6,pre')) {
     if (/^H\d$/.test(node.tagName)) {
       const heading = node.cloneNode(true);
-      heading.querySelectorAll('.MathJax,.MathJax_Preview,.MathJax_Display').forEach(n => n.remove());
-      kind = sampleKind(heading.textContent);
-    } else if (kind && !node.querySelector('.oms-sample-copy')) {
+      heading.querySelectorAll('[data-oms-ui],.MathJax,.MathJax_Preview,.MathJax_Display').forEach(n => n.remove());
+      kind = sampleKind(heading.textContent); sampleHeading = node;
+    } else if (kind && !('omsSample' in node.dataset)) {
+      node.dataset.omsSample = '';
       const label = kind === 'input' ? '复制输入' : '复制输出';
       const control = button(label, () => {
         const copy = node.cloneNode(true); copy.querySelectorAll('[data-oms-ui]').forEach(n => n.remove());
@@ -52,7 +54,9 @@ function enhanceStatement(root) {
       });
       control.classList.add('oms-sample-copy');
       control.setAttribute('aria-label', label + '样例');
-      node.classList.add('oms-sample'); node.append(control);
+      node.classList.add('oms-sample');
+      if (sampleHeading) { sampleHeading.classList.add('oms-sample-heading'); sampleHeading.append(control); }
+      else node.before(control);
     }
   }
 }
@@ -63,22 +67,13 @@ function enhanceEditor(textarea) {
   textarea.spellcheck = false; textarea.wrap = 'off';
   textarea.setAttribute('autocapitalize', 'off'); textarea.setAttribute('autocomplete', 'off');
   const modal = textarea.closest('.modal'); modal?.classList.add('oms-submit-modal');
-  const tools = ui(el('div', 'oms-editor-tools'));
-  const count = ui(el('span', 'oms-editor-count'));
-  count.setAttribute('aria-live', 'polite');
-  const size = ui(el('select', 'oms-font-size'));
-  size.setAttribute('aria-label', '代码字号');
-  for (const n of [14,16,18,20]) { const option = el('option', '', `${n} px`); option.value = n; size.append(option); }
-  size.value = '14'; size.addEventListener('change', () => { textarea.style.fontSize = size.value + 'px'; });
-  tools.append(count, size, button('复制代码', () => { void copyText(textarea.value); }));
-  textarea.before(tools);
+  const tools = ui(el('div', 'oms-editor-host oms-ui'));
+  textarea.before(tools); mountEditorTools(tools,textarea,text=>{void copyText(text);});
   const status = ui(el('div', 'oms-editor-status', 'Tab 缩进 · Shift+Tab 取消缩进 · Esc 后按 Tab 移出编辑器'));
   textarea.after(status);
   textarea.setAttribute('aria-label', '源代码');
   status.id = 'oms-editor-help-' + document.querySelectorAll('.oms-editor').length;
   textarea.setAttribute('aria-describedby', status.id);
-  const updateCount = () => { count.textContent = `${textarea.value.split('\n').length} 行 · ${textarea.value.length} 字符`; };
-  textarea.addEventListener('input', updateCount); updateCount();
   let escapeTab = false;
   textarea.addEventListener('keydown', event => {
     if (event.key === 'Escape') { escapeTab = true; return; }
@@ -101,13 +96,13 @@ function enhanceEditor(textarea) {
     // Native input events keep Angular ng-model and the original form in sync.
     textarea.dispatchEvent(new Event('input', { bubbles: true }));
   });
-  // Angular clears/replaces its model without firing a native input event.
-  const observer = new MutationObserver(updateCount);
-  if (modal) observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+
 }
 function enhance() {
+  pruneMounts();
   document.documentElement.classList.toggle('oms-theme', settings.theme);
   if (settings.theme) {
+    ensureShell(chrome.runtime.getManifest().version);
     for (const page of document.querySelectorAll('#page,[ng-view]')) {
       const columns = [...page.children].filter(node => node.matches('div[class*="col-"]'));
       if (columns.length >= 2 && columns.some(node => node.querySelector('.markdown-body'))) {
@@ -168,3 +163,5 @@ async function start() {
   }, 60_000);
 }
 void start();
+
+}

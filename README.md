@@ -2,13 +2,13 @@
 
 北航 Accoding 学生端浏览器扩展，基于 [OJ Modern](https://github.com/y38501148-max/accoding-modern) 开发。
 
-当前版本：**0.1.0** · Manifest V3 · 桌面 Edge / Chrome。
+当前版本：**0.2.0** · Manifest V3 · 桌面 Edge / Chrome。
 
 ## 功能
 
-界面美化覆盖导航、题面、列表和表单，支持题库页面和比赛页面。
+首页重新整理了课程、题库、比赛入口，以及待写题解、推荐题目和赛季冠军。侧栏导航、题面、列表和表单使用统一样式。
 
-题面顶部可以复制 Markdown，公式保留为 LaTeX，图片、表格和代码块也会一起复制。输入、输出样例各有复制按钮，保留原有空格和换行。
+题面顶部可以复制 Markdown，公式保留为 LaTeX，图片、表格和代码块也会一起复制。输入、输出样例的复制按钮位于标题行，框内只放样例，复制时保留原有空格和换行。
 
 提交弹窗提供更大的代码编辑区，可以调整字号、查看行数和字符数、复制代码。Tab 插入四个空格，Shift+Tab 取消缩进；先按 Esc，再按 Tab 可移出编辑器。
 
@@ -47,7 +47,9 @@ Edge 商店版由浏览器自动更新。GitHub 发布可能早于商店上架�
 
 ## 开发与发布
 
-需要 Node.js 22+；打包还需要系统 `zip` 命令。
+使用 Vue 3、TypeScript、Ant Design Vue 4 和 Vite，组件与样式随扩展打包。
+
+需要 Node.js 22.12+；打包还需要系统 `zip` 命令。
 
 ```sh
 npm ci
@@ -55,7 +57,9 @@ npm run check
 npm run package
 ```
 
-- `src/`：功能源码、样式、后台和弹出面板。
+- `src/ui/`：Vue 组件、主题和页面样式。
+- `src/enhance.js`：题面复制、提交编辑与原站适配。
+- `src/background.js`：版本检查和本地设置。
 - `extension/`：可直接加载的 GitHub 版，由 `npm run build` 生成。
 - `dist/oj-modern-student-github-版本.zip`：GitHub 手动安装包。
 - `dist/oj-modern-student-edge-版本.zip`：Edge 商店提交包，manifest 位于 ZIP 根目录。
