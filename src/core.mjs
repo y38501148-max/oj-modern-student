@@ -15,10 +15,3 @@ export function newerVersion(candidate, installed) {
   for (let i = 0; i < 3; i++) if (a[i] !== b[i]) return a[i] > b[i];
   return false;
 }
-
-export function sampleKind(text) {
-  const name = text.replace(/\$\s*(\d+)\s*\$/g, '$1').replace(/[\s:：#\d（）()_\-]/g, '').toLowerCase();
-  if (/^(输入样例|样例输入|输入示例|示例输入|sampleinput|inputsample|exampleinput)$/.test(name)) return 'input';
-  if (/^(输出样例|样例输出|输出示例|示例输出|sampleoutput|outputsample|exampleoutput)$/.test(name)) return 'output';
-  return null;
-}

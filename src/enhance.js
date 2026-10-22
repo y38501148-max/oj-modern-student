@@ -1,4 +1,4 @@
-import { DEFAULT_SETTINGS, REPOSITORY, newerVersion, sampleKind } from './core.mjs';
+import { DEFAULT_SETTINGS, REPOSITORY, newerVersion } from './core.mjs';
 import { ensureShell, ensurePersonalHistory, ensureSubmissionView, mountAction, mountEditorTools, mountScore, pruneMounts } from './ui/mount';
 import { enhanceSubmissionHistory } from './submissions.mjs';
 import { bindInlineSubmission } from './inline-submission.mjs';
@@ -28,25 +28,19 @@ async function copyText(text) {
   catch { toast('复制失败，请允许剪贴板访问后重试'); }
 }
 function enhanceStatement(root) {
-  // Math-rendered sample numbers are normalized from their source, not visual duplicates.
-  let kind = null, sampleHeading = null;
-  for (const node of root.querySelectorAll('h1,h2,h3,h4,h5,h6,pre')) {
-    if (/^H\d$/.test(node.tagName)) {
-      const heading = node.cloneNode(true);
-      heading.querySelectorAll('[data-oms-ui],.MathJax,.MathJax_Preview,.MathJax_Display,.MathJax_SVG,.MathJax_SVG_Display,.MJX_Assistive_MathML').forEach(n => n.remove());
-      kind = sampleKind(heading.textContent); sampleHeading = node;
-    } else if (kind && !('omsSample' in node.dataset)) {
-      node.dataset.omsSample = '';
-      const label = kind === 'input' ? '复制输入' : '复制输出';
-      const control = button(label, () => {
+  for (const node of root.querySelectorAll('pre,textarea')) {
+    if (!('omsBlock' in node.dataset) && !node.classList.contains('oms-editor')) {
+      node.dataset.omsBlock = '';
+      const control = button('复制', () => {
+        if(node.tagName==='TEXTAREA'){void copyText(node.value);return;}
         const copy = node.cloneNode(true); copy.querySelectorAll('[data-oms-ui]').forEach(n => n.remove());
         void copyText(copy.textContent);
       });
-      control.classList.add('oms-sample-copy');
-      control.setAttribute('aria-label', label + '样例');
-      node.classList.add('oms-sample');
-      if (sampleHeading) { sampleHeading.classList.add('oms-sample-heading'); sampleHeading.append(control); }
-      else node.before(control);
+      control.classList.add('oms-block-copy');
+      control.setAttribute('aria-label','复制'+(node.tagName==='TEXTAREA'?'文本':'代码块'));
+      const heading=node.previousElementSibling;
+      if(heading?.matches('h1,h2,h3,h4,h5,h6')){heading.classList.add('oms-block-heading');heading.append(control);}
+      else {const actions=ui(el('div','oms-block-actions'));actions.append(control);node.before(actions);}
     }
   }
 }
@@ -131,16 +125,9 @@ function enhance() {
       for(const sibling of current?.children || []) if (sibling.matches('.btn-success')) {sibling.classList.add('oms-pagination-current');sibling.setAttribute('aria-current','page');}
       if(control.hasAttribute('disabled')) {control.setAttribute('aria-disabled','true');control.setAttribute('tabindex','-1');}
     }
-    if (document.documentElement.classList.contains('oms-contest-page')) {
-      const history=document.querySelector('.oms-submission-aside');
-      const submit=document.querySelector('.oms-main [data-target="#myModal"]');
-      if (history && submit && !submit.parentElement.querySelector('.oms-history-link')) {
-        const control=button('提交记录',()=>history.scrollIntoView({behavior:'smooth',block:'start'}));control.classList.add('oms-history-link');submit.before(control);
-      }
-    }
   }
   if (settings.copy) for (const root of document.querySelectorAll('.markdown-body:not(textarea)')) {
-    if (root.closest('.modal') || !root.querySelector('h2,h3,pre') || !document.querySelector('.problem-title')) continue;
+    if (root.closest('.modal') || !root.querySelector('pre,textarea') || !document.querySelector('.problem-title')) continue;
     enhanceStatement(root);
   }
   if (settings.submission) for (const textarea of document.querySelectorAll('textarea[name="code"],textarea#code[ng-model]')) enhanceEditor(textarea);

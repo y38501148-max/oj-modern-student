@@ -19,7 +19,7 @@ html.oms-theme { --oms-bg:#f5f7fb;--oms-line:#e6ebf2;--oms-ink:#26364d;--oms-mut
 .oms-theme .oms-columns:has(>div.col-lg-10) { grid-template-columns:172px minmax(0,1fr); }
 .oms-theme .markdown-body { padding:28px 30px!important;background:#fff;border:1px solid var(--oms-line);border-radius:12px;color:var(--oms-ink);font-size:15px;line-height:1.95;overflow-wrap:anywhere;min-width:0; }
 .oms-theme .markdown-body h2 { margin:28px 0 16px;padding-bottom:10px;border-bottom:1px solid #edf0f5;font-size:19px; }
-.oms-theme .markdown-body h2.oms-sample-heading,.oms-sample-heading { display:flex;align-items:center;justify-content:space-between;gap:16px; }
+.oms-theme .markdown-body h2.oms-block-heading,.oms-block-heading { display:flex;align-items:center;justify-content:space-between;gap:16px; }
 .oms-theme .markdown-body img { max-width:100%;height:auto; }
 .oms-theme .markdown-body pre,.oms-theme #page pre { padding:16px 18px;border:1px solid #e7ecf3;border-radius:8px;background:#f8fafc;color:#40516c;overflow:auto;white-space:pre;font:13px/1.85 ui-monospace,SFMono-Regular,Consolas,monospace; }
 .oms-theme .markdown-body blockquote { padding:12px 18px;border-left:3px solid #bad0fa;background:#f6f9ff;color:#60718a; }
@@ -94,7 +94,6 @@ textarea.oms-editor { width:100%!important;height:clamp(260px,44vh,480px)!import
 .oms-theme.oms-contest-page a[ng-repeat="problem in Contest.data.problems"].btn-danger { background:#fff0f2;border-color:#edb8c2;color:#b2354d; }
 .oms-theme.oms-contest-page a[ng-repeat="problem in Contest.data.problems"].btn-danger:is(:hover,.active) { background:#fbdce2;border-color:#d98c9e;color:#93293e; }
 .oms-theme.oms-contest-page .oms-columns>.oms-submission-aside { grid-column:3;grid-row:1;scroll-margin-top:90px; }
-.oms-history-link { margin-right:10px; }
 .oms-theme .oms-contest-notices { grid-column:1/-1;border-top:1px solid var(--oms-line);padding-top:10px;color:var(--oms-muted);font-size:12px; }
 .oms-theme .oms-contest-notices summary { cursor:pointer;width:max-content; }
 .oms-theme .oms-contest-notices>div { display:flow-root; }

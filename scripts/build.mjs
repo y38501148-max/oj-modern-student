@@ -12,7 +12,7 @@ if (!/^\d+\.\d+\.\d+$/.test(version)) throw Error('版本号须为 x.y.z');
 await mkdir(out, { recursive: true });
 const manifest = {
   manifest_version: 3, name: 'OJ Modern Student', version,
-  description: '北航 Accoding 学生端：界面美化、样例复制、提交界面优化。',
+  description: '北航 Accoding 学生端：界面美化、文本与代码复制、提交界面优化。',
   homepage_url: 'https://github.com/y38501148-max/oj-modern-student',
   permissions: ['storage','alarms','clipboardWrite'],
   host_permissions: ['https://raw.githubusercontent.com/*'],

@@ -4,12 +4,12 @@
 
 ## 提交文件
 
-运行 `npm run package` 后上传 `dist/oj-modern-student-edge-0.2.4.zip`。`manifest.json` 位于 ZIP 根目录，后台和面板均使用本地模块，功能代码随包分发。
+运行 `npm run package` 后上传 `dist/oj-modern-student-edge-0.2.5.zip`。`manifest.json` 位于 ZIP 根目录，后台和面板均使用本地模块，功能代码随包分发。
 
 ## 商店文案
 
 - 名称：OJ Modern Student
-- 简短说明：北航 Accoding 学生端：界面美化、样例复制、提交界面优化。
+- 简短说明：北航 Accoding 学生端：界面美化、文本与代码复制、提交界面优化。
 - 分类：开发人员工具 / 生产力（以后台可选项为准）
 - 语言：简体中文
 - 支持与主页：`https://github.com/y38501148-max/oj-modern-student`
@@ -17,7 +17,7 @@
 
 详细说明：
 
-> OJ Modern Student 为北航 Accoding 学生页面提供统一的导航、题面、表格与表单样式；支持一键复制输入和输出样例；加宽提交弹窗，提供代码字号、行数统计、Tab 缩进与代码复制。
+> OJ Modern Student 为北航 Accoding 学生页面提供统一的导航、题面、表格与表单样式；支持一键复制题面中的代码块和文本框；加宽提交弹窗，提供代码字号、行数统计、Tab 缩进与代码复制。
 >
 > 安装后打开 https://accoding.buaa.edu.cn/ 即可使用，功能可独立关闭。继续使用原站登录和提交流程。扩展在本地处理页面内容，版本检查只访问公开的 GitHub 版本文件。
 >

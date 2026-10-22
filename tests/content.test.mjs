@@ -26,18 +26,36 @@ function page(settings = {}, state = {}, options = {}) {
 }
 test('复制样例保持所有空白，异步更换题面后只复制当前题', async () => {
   const p = page(); await pause();
-  assert.equal(p.document.querySelectorAll('.oms-sample-copy').length,2);
+  assert.equal(p.document.querySelectorAll('.oms-block-copy').length,2);
   assert.equal(p.document.querySelector('pre button'),null);
-  assert.equal(p.document.querySelector('h2 .oms-sample-copy')!==null,true);
-  p.document.querySelector('.oms-sample-copy button').click(); await pause();
+  assert.equal(p.document.querySelector('h2 .oms-block-copy')!==null,true);
+  assert.ok([...p.document.querySelectorAll('.oms-block-copy button')].every(button=>button.textContent==='复制'));
+  p.document.querySelector('.oms-block-copy button').click(); await pause();
   assert.equal(p.copies[0], '  1\t2\n\n');
   const root = p.document.querySelector('.markdown-body');
   root.innerHTML = '<h1 class="problem-title">第二题</h1><h2>输入样例</h2><pre>new\n</pre>';
   await pause();
   assert.equal(p.document.querySelectorAll('.oms-copybar').length,0);
-  assert.equal(root.querySelectorAll('.oms-sample-copy').length,1);
-  root.querySelector('.oms-sample-copy button').click(); await pause();
+  assert.equal(root.querySelectorAll('.oms-block-copy').length,1);
+  root.querySelector('.oms-block-copy button').click(); await pause();
   assert.equal(p.copies[1], 'new\n');
+  await p.close();
+});
+test('题面模板代码和文本框均在框外复制，读取当前内容且保留空白',async()=>{
+  const code='#include <stdio.h>\n\nint main() {\n\treturn 0;\n}\n';
+  const p=page({}, {}, {html:'<div id="page"><div class="markdown-body"><h1 class="problem-title">模板</h1><h2>输入提示</h2><p>可以参考这段代码：</p><pre><code>'+code.replaceAll('<','&lt;')+'</code></pre><p>数据</p><textarea readonly>旧内容</textarea></div></div>'});
+  await pause();
+  const root=p.document.querySelector('.markdown-body');
+  assert.equal(root.querySelectorAll('.oms-block-copy').length,2);
+  assert.equal(root.querySelectorAll('pre button,textarea button').length,0);
+  root.querySelector('pre').previousElementSibling.querySelector('button').click();await pause();
+  assert.equal(p.copies[0],code);
+  root.querySelector('textarea').value='  更新\t文本\n\n';
+  root.querySelector('textarea').previousElementSibling.querySelector('button').click();await pause();
+  assert.equal(p.copies[1],'  更新\t文本\n\n');
+  root.append(p.document.createElement('p'));await pause();
+  assert.equal(root.querySelectorAll('.oms-block-copy').length,2);
+  assert.ok([...root.querySelectorAll('.oms-block-copy button')].every(button=>button.textContent==='复制'));
   await p.close();
 });
 test('提交优化保留原表单，Tab 更新原 textarea 并派发 input，Esc+Tab 可离开', async () => {
@@ -46,6 +64,7 @@ test('提交优化保留原表单，Tab 更新原 textarea 并派发 input，Esc
   assert.equal(textarea.form,form);
   assert.equal(form.action,'https://accoding.buaa.edu.cn/problem/1/submit');
   assert.equal(p.document.querySelectorAll('.oms-editor-tools').length,1);
+  assert.equal(p.document.querySelector('.oms-editor-tools button').textContent,'复制');
   p.document.querySelector('.modal').append(p.document.createElement('p'));
   await pause();
   assert.equal(p.document.querySelectorAll('.oms-editor-tools').length,1);
@@ -88,6 +107,7 @@ test('查看代码页复制纯源码，保留缩进和换行并移除原站提�
   const p=page({}, {}, {url:'https://accoding.buaa.edu.cn/submission/42',html:'<pre><code>'+(header+code)+'</code></pre>'});
   await pause();
   assert.equal(p.document.querySelectorAll('#oms-code-app').length,1);
+  assert.equal(p.document.querySelector('.oms-code-card .oms-ant-btn-primary').textContent,'复制');
   assert.equal(p.document.querySelector('.oms-source-pre code').textContent,code);
   p.document.querySelector('.oms-code-card .oms-ant-btn-primary').click();await pause();
   assert.equal(p.copies[0],code);

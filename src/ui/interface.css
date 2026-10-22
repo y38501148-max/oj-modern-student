@@ -84,7 +84,8 @@
 .oms-course-list>a>span:first-child { flex:1;min-width:0;overflow-wrap:anywhere; }
 .oms-course-list>a>span:last-child { flex:none;color:#8293ad;font-size:12px; }
 .oms-course-card .oms-ant-btn { margin-top:10px;color:#60718a; }
-.oms-sample-copy { margin-left:auto; flex:none; font-size:13px; }
+.oms-block-copy { margin-left:auto; flex:none; font-size:13px; }
+.oms-block-actions { display:flex;justify-content:flex-end;margin:12px 0 8px; }
 .oms-editor-tools { display:flex; align-items:center; gap:10px; margin:12px 0; }
 .oms-editor-count { margin-right:auto; color:#60718a; font-size:12px; font-variant-numeric:tabular-nums; }
 .oms-editor-status { margin-top:8px; color:#60718a; font:11px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
