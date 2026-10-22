@@ -12,6 +12,7 @@ import { parseSubmissionSource, trimSourceHeader } from '../submission-source.mj
 
 const mounts = new Map<HTMLElement, App>();
 let shell: ReturnType<typeof readPage> | undefined;
+let personalHistory: {submissionStarted:()=>void;submissionCreated:(row:any)=>void;submissionCancelled:()=>void;refresh:()=>void}|undefined;
 export function pruneMounts() {
   for (const [host, app] of mounts) if (!host.isConnected) { app.unmount(); mounts.delete(host); }
 }
@@ -36,7 +37,8 @@ export function ensureSubmissionView(copy:(text:string)=>void) {
 }
 export function ensurePersonalHistory() {
   const problem=location.pathname.match(/^\/problem\/(\d+)\/index\/?$/);
-  if (!problem || document.querySelector('.oms-personal-history')) return;
+  if (!problem) return;
+  if(document.querySelector('.oms-personal-history'))return personalHistory;
   const heading=[...document.querySelectorAll('#page h4')].find(node=>node.textContent?.trim()==='相关推荐');
   if (!heading) return;
   const host=document.createElement('section');host.className='oms-personal-history oms-submission-aside oms-ui';host.dataset.omsUi='';
@@ -44,7 +46,8 @@ export function ensurePersonalHistory() {
   while(next && !next.matches('script,.modal')) {const sibling=next.nextElementSibling;next.remove();next=sibling;}
   heading.replaceWith(host);
   const csrf=document.querySelector<HTMLInputElement>('input[name="_csrf"]')?.value || '';
-  const app=createApp(PersonalHistory,{problemId:problem[1],csrf});app.mount(host);mounts.set(host,app);
+  const app=createApp(PersonalHistory,{problemId:problem[1],csrf});personalHistory=app.mount(host) as unknown as NonNullable<typeof personalHistory>;mounts.set(host,app);
+  return personalHistory;
 }
 export function ensureShell(version: string) {
   if (!document.querySelector('#navbar,[ng-view]>nav')) return;

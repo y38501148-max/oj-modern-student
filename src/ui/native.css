@@ -46,13 +46,16 @@ html.oms-theme { --oms-bg:#f5f7fb;--oms-line:#e6ebf2;--oms-ink:#26364d;--oms-mut
 .oms-theme .oms-submission-table { table-layout:fixed;min-width:328px; }
 .oms-theme .oms-submission-table :is(td,th) { padding:10px 7px!important;font-size:12px!important;font-variant-numeric:tabular-nums; }
 .oms-theme .oms-submission-table tr>:first-child { width:78px; }
-.oms-theme .oms-submission-table tr>:nth-child(2) { width:48px; }
+.oms-theme .oms-submission-table tr>:nth-child(2) { width:70px; }
 .oms-theme .oms-submission-table tr>:nth-child(3) { width:64px; }
 .oms-theme .oms-submission-table tr>:nth-child(4) { width:68px; }
 .oms-theme .oms-submission-table .oms-score-cell { color:#2563eb!important;font-weight:600; }
 .oms-theme .oms-submission-table tbody td { background:#fff!important; }
 .oms-theme .oms-submission-table .red-td { color:#b2354d!important; }
 .oms-theme .oms-submission-table .blue-td { color:#16765d!important; }
+.oms-theme .oms-submission-table .oms-pending-result { color:#8c6b1f!important;font-size:11px!important; }
+.oms-pending-dot { display:inline-block;width:5px;height:5px;margin-right:4px;border-radius:50%;background:currentColor;vertical-align:middle; }
+.oms-submit-status { margin:0 0 10px;color:#60718a;font-size:13px; }
 .oms-theme .oms-native-pagination { display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:20px 0; }
 .oms-theme .oms-native-pagination :is(.oms-pagination-button,.oms-pagination-current) { min-width:36px;margin:0!important;padding:7px 12px!important;border:1px solid #dce3ee!important;background:#fff!important;color:#52637e!important;font-size:13px!important;font-weight:400;border-radius:7px;box-shadow:none!important; }
 .oms-theme .oms-native-pagination .oms-pagination-current { border-color:#b8cefb!important;background:#edf3ff!important;color:#2563eb!important; }

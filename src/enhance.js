@@ -1,6 +1,7 @@
 import { DEFAULT_SETTINGS, REPOSITORY, newerVersion, sampleKind } from './core.mjs';
 import { ensureShell, ensurePersonalHistory, ensureSubmissionView, mountAction, mountEditorTools, pruneMounts } from './ui/mount';
 import { enhanceSubmissionHistory } from './submissions.mjs';
+import { bindInlineSubmission } from './inline-submission.mjs';
 
 export function mountEnhancements() {
 const el = (tag, className, text) => {
@@ -121,7 +122,8 @@ function enhance() {
       const wrap = el('div', 'oms-table-wrap'); table.before(wrap); wrap.append(table);
     }
     enhanceSubmissionHistory(document, location.href);
-    ensurePersonalHistory();
+    const history=ensurePersonalHistory();
+    if(settings.submission && history)bindInlineSubmission(document.querySelector('#myModal form'),history);
     for (const control of document.querySelectorAll('[onclick*="change_page("]')) {
       control.classList.add('oms-pagination-button');
       const current=control.parentElement;

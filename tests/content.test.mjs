@@ -17,6 +17,7 @@ function page(settings = {}, state = {}, options = {}) {
   dom.window.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
   dom.window.chrome = { runtime: { getManifest:()=>({version:'0.2.0'}), getURL:path=>'chrome-extension://test/'+path, sendMessage: async msg => { messages.push(msg); return { version:'0.1.0',channel:'github',settings:{theme:true,copy:true,submission:true,...settings},update:{version:'0.1.0'},...state }; } } };
   Object.defineProperty(dom.window.navigator,'clipboard',{value:{writeText:async text=>copies.push(text)}});
+  if(options.fetch)dom.window.fetch=options.fetch;
   dom.window.eval(source);
   let closed=false;
   const close=async()=>{if(closed)return;closed=true;dom.window.document.body.replaceChildren();await pause();observers.forEach(o=>o.disconnect());dom.window.close();pages.delete(close);};
@@ -92,4 +93,79 @@ test('查看代码页复制纯源码，保留缩进和换行并移除原站提�
   assert.equal(p.copies[0],code);
   assert.match(p.document.querySelector('.oms-code-meta').textContent,/题目 #7/);
   await p.close();
+});
+
+const inlinePage = `<div id="page"><div class="col-lg-8"><div class="markdown-body">${statement}</div></div><div class="col-lg-4"><div id="myModal" class="modal"><form id="form" action="/problem/1/submit" method="post"><input type="hidden" name="_csrf" value="test-token"><select name="lang"><option value="c">C</option></select><textarea name="code"></textarea><button id="button" type="button" onclick="check()">确认提交</button></form></div><h4>相关推荐</h4><h3>推荐题目</h3></div></div>`;
+const historyHtml = (id=42,result='Waiting') => `<form id="form_of_submission"><table><tr id="tr0"><td id="submission_id0"><a href="/submission/${id}">${id}</a></td><td><a href="/user/7/index">测试同学</a></td><td id="submission_result0">${result}</td><td id="submission_score0">0</td><td id="submission_time0">0</td><td id="submission_memory0">0</td></tr></table></form>`;
+const htmlResponse = (html,url='https://accoding.buaa.edu.cn/problem/1/submission',ok=true) => ({ok,url,text:async()=>html});
+
+test('普通题提交留在题面，防重复点击，并轮询 Waiting → Judging → AC', async()=>{
+  let created=false, submits=0, polls=0, release;
+  const pendingResponse=new Promise(resolve=>{release=resolve;});
+  const code='int main() {\n    // a+b & c=2\n    return 0;\n}\n';
+  const p=page({}, {}, {html:inlinePage,fetch:async(url,options={})=>{
+    if(url==='/api/users/me')return {ok:true,json:async()=>({id:7,nickname:'测试同学'})};
+    if(String(url).includes('getSubmissionApi')){
+      assert.deepEqual(JSON.parse(new URL(url,'https://accoding.buaa.edu.cn').searchParams.get('submission_id')),['42']);
+      polls++;
+      if(polls===1)throw Error('暂时离线');
+      return {ok:true,json:async()=>[{id:42,result:polls===2?'JG':'AC',score:1,time_cost:10,memory_cost:1700},{id:999,result:'WA'}]};
+    }
+    if(String(url).includes('/submission?offset=0'))return htmlResponse(created?historyHtml():'<form id="form_of_submission"></form>');
+    assert.equal(url,'https://accoding.buaa.edu.cn/problem/1/submit');
+    assert.equal(options.method,'POST');
+    assert.equal(options.credentials,'same-origin');
+    assert.equal(options.body.get('code'),code);
+    assert.equal(options.body.get('_csrf'),'test-token');
+    assert.equal(options.body.get('lang'),'c');
+    submits++;await pendingResponse;created=true;return htmlResponse(historyHtml());
+  }});
+  await pause();
+  const form=p.document.querySelector('#form'),button=p.document.querySelector('#button');
+  assert.equal(button.type,'submit');assert.equal(button.hasAttribute('onclick'),false);
+  let legacyClicks=0;
+  button.onclick=()=>{legacyClicks++;};
+  button.click();await pause();
+  assert.match(p.document.querySelector('.oms-submit-status').textContent,/请输入代码/);assert.equal(submits,0);assert.equal(legacyClicks,0);
+  p.document.querySelector('textarea').value=code;
+  const submit=()=>form.dispatchEvent(new p.window.Event('submit',{bubbles:true,cancelable:true}));
+  assert.equal(submit(),false);submit();await pause();
+  assert.equal(submits,1);assert.equal(button.disabled,true);
+  assert.match(p.document.querySelector('.oms-submission-table tbody').textContent,/提交中/);
+  release();await pause();
+  const table=()=>p.document.querySelector('.oms-submission-table tbody');
+  assert.match(table().textContent,/42Waiting/);assert.equal(button.disabled,false);
+  await new Promise(resolve=>setTimeout(resolve,3100));
+  assert.match(p.document.querySelector('.oms-history-status').textContent,/正在重试/);
+  assert.match(table().textContent,/Waiting/);
+  await new Promise(resolve=>setTimeout(resolve,3100));
+  assert.match(table().textContent,/Judging/);
+  await new Promise(resolve=>setTimeout(resolve,3100));
+  assert.deepEqual([...table().querySelectorAll('td')].map(cell=>cell.textContent),['42','AC','100','10','1700']);
+  assert.equal(p.document.querySelector('.oms-history-status'),null);
+  assert.equal(p.window.location.pathname,'/problem/1/index');
+  assert.equal(p.document.querySelector('textarea').value,code);
+  assert.equal(submits,1);assert.equal(polls,3);
+  await p.close();
+});
+
+test('提交被拒绝或网络中断时保留代码，恢复按钮且不自动重交', async()=>{
+  for(const networkFailure of [false,true]){
+    let submits=0;
+    const p=page({}, {}, {html:inlinePage,fetch:async(url)=>{
+      if(url==='/api/users/me')return {ok:true,json:async()=>({id:7,nickname:'测试同学'})};
+      if(String(url).includes('/submission?offset=0'))return htmlResponse('<form id="form_of_submission"></form>');
+      submits++;
+      if(networkFailure)throw Error('network error');
+      return htmlResponse('<div class="alert-danger">请选择语言。</div>','https://accoding.buaa.edu.cn/problem/1/submit',false);
+    }});
+    await pause();
+    p.document.querySelector('textarea').value='draft';p.document.querySelector('#button').click();await pause();
+    assert.match(p.document.querySelector('.oms-submit-status').textContent,networkFailure?/提交结果未确认/:/请选择语言/);
+    assert.equal(p.document.querySelector('textarea').value,'draft');
+    assert.equal(p.document.querySelector('#button').disabled,false);
+    assert.equal(p.document.querySelector('.oms-submission-table'),null);
+    assert.equal(p.window.location.pathname,'/problem/1/index');assert.equal(submits,1);
+    await p.close();
+  }
 });
