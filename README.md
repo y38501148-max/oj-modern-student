@@ -2,6 +2,8 @@
 
 北航 Accoding 学生端浏览器扩展，基于 [OJ Modern](https://github.com/y38501148-max/accoding-modern) 开发。
 
+该插件由个人开发，与北航程序设计课程组无关。
+
 当前版本：**0.2.1** · Manifest V3 · 桌面 Edge / Chrome。
 
 ## 功能
