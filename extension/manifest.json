@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "OJ Modern Student",
+  "version": "0.1.0",
+  "description": "北航 Accoding 学生端：界面美化、题面和样例复制、提交界面优化。",
+  "homepage_url": "https://github.com/y38501148-max/oj-modern-student",
+  "permissions": [
+    "storage",
+    "alarms",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://raw.githubusercontent.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "OJ Modern Student",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/16.png",
+      "32": "icons/32.png"
+    }
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://accoding.buaa.edu.cn/*"
+      ],
+      "css": [
+        "theme.css"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

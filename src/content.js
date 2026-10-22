@@ -1,0 +1,170 @@
+// Built together with core.mjs inside the extension's isolated content-script world.
+if (!isStudentSite(location.href) || globalThis.__ojModernStudent) return;
+globalThis.__ojModernStudent = true;
+const el = (tag, className, text) => {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+};
+const ui = node => { node.dataset.omsUi = ''; return node; };
+const button = (text, handler) => {
+  const node = ui(el('button', 'oms-button', text));
+  node.type = 'button'; node.addEventListener('click', handler); return node;
+};
+let settings = { ...DEFAULT_SETTINGS };
+let toastTimer;
+function toast(text) {
+  let node = document.querySelector('#oms-toast');
+  if (!node) { node = ui(el('div', 'oms-toast')); node.id = 'oms-toast'; node.setAttribute('role', 'status'); document.body.append(node); }
+  node.textContent = text; node.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { node.hidden = true; }, 3000);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); toast('已复制'); }
+  catch { toast('复制失败，请允许剪贴板访问后重试'); }
+}
+function enhanceStatement(root) {
+  if (!root.querySelector('.oms-copybar')) {
+    const bar = ui(el('div', 'oms-copybar'));
+    bar.append(button('复制题面 Markdown', () => {
+      let text = statementMarkdown(root, location.href);
+      if (!root.querySelector('.problem-title')) {
+        const title = root.closest('[class*="col-"]')?.querySelector('.problem-title')?.textContent.trim().replace(/\s+/g, ' ');
+        if (title) text = '# ' + title + '\n\n' + text;
+      }
+      void copyText(text);
+    }));
+    root.prepend(bar);
+  }
+  // Math-rendered sample numbers are normalized from their source, not visual duplicates.
+  let kind = null;
+  for (const node of root.querySelectorAll('h1,h2,h3,h4,h5,h6,pre')) {
+    if (/^H\d$/.test(node.tagName)) {
+      const heading = node.cloneNode(true);
+      heading.querySelectorAll('.MathJax,.MathJax_Preview,.MathJax_Display').forEach(n => n.remove());
+      kind = sampleKind(heading.textContent);
+    } else if (kind && !node.querySelector('.oms-sample-copy')) {
+      const label = kind === 'input' ? '复制输入' : '复制输出';
+      const control = button(label, () => {
+        const copy = node.cloneNode(true); copy.querySelectorAll('[data-oms-ui]').forEach(n => n.remove());
+        void copyText(copy.textContent);
+      });
+      control.classList.add('oms-sample-copy');
+      control.setAttribute('aria-label', label + '样例');
+      node.classList.add('oms-sample'); node.append(control);
+    }
+  }
+}
+function enhanceEditor(textarea) {
+  if ('omsEditor' in textarea.dataset) return;
+  textarea.dataset.omsEditor = '';
+  textarea.classList.add('oms-editor');
+  textarea.spellcheck = false; textarea.wrap = 'off';
+  textarea.setAttribute('autocapitalize', 'off'); textarea.setAttribute('autocomplete', 'off');
+  const modal = textarea.closest('.modal'); modal?.classList.add('oms-submit-modal');
+  const tools = ui(el('div', 'oms-editor-tools'));
+  const count = ui(el('span', 'oms-editor-count'));
+  count.setAttribute('aria-live', 'polite');
+  const size = ui(el('select', 'oms-font-size'));
+  size.setAttribute('aria-label', '代码字号');
+  for (const n of [14,16,18,20]) { const option = el('option', '', `${n} px`); option.value = n; size.append(option); }
+  size.value = '14'; size.addEventListener('change', () => { textarea.style.fontSize = size.value + 'px'; });
+  tools.append(count, size, button('复制代码', () => { void copyText(textarea.value); }));
+  textarea.before(tools);
+  const status = ui(el('div', 'oms-editor-status', 'Tab 缩进 · Shift+Tab 取消缩进 · Esc 后按 Tab 移出编辑器'));
+  textarea.after(status);
+  textarea.setAttribute('aria-label', '源代码');
+  status.id = 'oms-editor-help-' + document.querySelectorAll('.oms-editor').length;
+  textarea.setAttribute('aria-describedby', status.id);
+  const updateCount = () => { count.textContent = `${textarea.value.split('\n').length} 行 · ${textarea.value.length} 字符`; };
+  textarea.addEventListener('input', updateCount); updateCount();
+  let escapeTab = false;
+  textarea.addEventListener('keydown', event => {
+    if (event.key === 'Escape') { escapeTab = true; return; }
+    if (event.key !== 'Tab' || event.ctrlKey || event.metaKey || event.altKey) { escapeTab = false; return; }
+    if (escapeTab) { escapeTab = false; return; }
+    event.preventDefault();
+    const start = textarea.selectionStart, end = textarea.selectionEnd;
+    const lineStart = textarea.value.lastIndexOf('\n', start - 1) + 1;
+    if (event.shiftKey) {
+      const selection = textarea.value.slice(lineStart, end);
+      const changed = selection.replace(/^( {1,4}|\t)/gm, '');
+      const firstRemoved = selection.length - selection.replace(/^( {1,4}|\t)/, '').length;
+      textarea.setRangeText(changed, lineStart, end, 'select');
+      textarea.setSelectionRange(Math.max(lineStart, start - firstRemoved), end - (selection.length - changed.length));
+    } else if (start !== end) {
+      const selection = textarea.value.slice(lineStart, end), changed = selection.replace(/^/gm, '    ');
+      textarea.setRangeText(changed, lineStart, end, 'select');
+      textarea.setSelectionRange(start + 4, end + changed.length - selection.length);
+    } else textarea.setRangeText('    ', start, end, 'end');
+    // Native input events keep Angular ng-model and the original form in sync.
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  // Angular clears/replaces its model without firing a native input event.
+  const observer = new MutationObserver(updateCount);
+  if (modal) observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+}
+function enhance() {
+  document.documentElement.classList.toggle('oms-theme', settings.theme);
+  if (settings.theme) {
+    for (const page of document.querySelectorAll('#page,[ng-view]')) {
+      const columns = [...page.children].filter(node => node.matches('div[class*="col-"]'));
+      if (columns.length >= 2 && columns.some(node => node.querySelector('.markdown-body'))) {
+        page.classList.add('oms-columns');
+        columns.forEach(node => {
+          node.classList.toggle('oms-main', !!node.querySelector('.markdown-body'));
+          node.classList.toggle('oms-empty-aside', !node.textContent.trim() && !node.querySelector('input,button,a,img'));
+        });
+      }
+    }
+    for (const table of document.querySelectorAll('#page table.table,[ng-view] table.table')) {
+      if (table.closest('.oms-table-wrap,.modal,.markdown-body') || table.parentElement.closest('table')) continue;
+      const wrap = el('div', 'oms-table-wrap'); table.before(wrap); wrap.append(table);
+    }
+  }
+  if (settings.copy) for (const root of document.querySelectorAll('.markdown-body:not(textarea)')) {
+    if (root.closest('.modal') || !root.querySelector('h2,h3,pre') || !document.querySelector('.problem-title')) continue;
+    enhanceStatement(root);
+  }
+  if (settings.submission) for (const textarea of document.querySelectorAll('textarea[name="code"],textarea#code[ng-model]')) enhanceEditor(textarea);
+}
+let reloadNoticeDismissed = false;
+function updateNotice(state, invalidated = false) {
+  if (invalidated && reloadNoticeDismissed) return;
+  const old = document.querySelector('#oms-update');
+  if (old) return;
+  if (!invalidated && (!newerVersion(state.update?.version || '', state.version) || state.dismissedVersion === state.update.version)) return;
+  const bar = ui(el('aside', 'oms-update')); bar.id = 'oms-update'; bar.setAttribute('aria-label', '扩展更新');
+  const text = invalidated ? '扩展已更新或重新加载，保存代码后刷新页面以启用。' : state.channel === 'edge'
+    ? `新版本 ${state.update.version} 已发布，Edge 将在商店上架后自动更新。`
+    : `发现新版本 ${state.update.version}。下载并替换原扩展目录，再到扩展管理页点击“重新加载”。`;
+  bar.append(el('span', '', text));
+  if (invalidated) bar.append(button('刷新页面', () => {
+    const hasCode = [...document.querySelectorAll('textarea[name="code"],textarea#code')].some(node => node.value);
+    if (!hasCode || confirm('编辑器中有代码，请确认已保存到本地。现在刷新页面？')) location.reload();
+  }));
+  else { const link = el('a', 'oms-button', state.channel === 'edge' ? '查看更新说明' : '下载更新'); link.href = REPOSITORY + '/releases/latest'; link.target = '_blank'; link.rel = 'noopener noreferrer'; bar.append(link); }
+  bar.append(button('稍后', () => { bar.remove(); if (invalidated) reloadNoticeDismissed = true; else void chrome.runtime.sendMessage({ type: 'dismiss', version: state.update.version }); }));
+  (document.querySelector('#page,[ng-view]') || document.body).before(bar);
+}
+async function start() {
+  try {
+    const state = await chrome.runtime.sendMessage({ type: 'state' });
+    if (state && !state.error) { settings = state.settings; updateNotice(state); }
+  } catch (error) { console.warn('OJ Modern Student：无法读取扩展设置', error); }
+  enhance();
+  let pending = false;
+  const observer = new MutationObserver(records => {
+    if (records.every(record => record.target.closest?.('[data-oms-ui]'))) return;
+    if (pending) return;
+    pending = true; requestAnimationFrame(() => { pending = false; enhance(); });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+  setInterval(async () => {
+    if (document.hidden) return;
+    try { const state = await chrome.runtime.sendMessage({ type: 'state' }); if (state && !state.error) updateNotice(state); }
+    catch (error) { if (/context invalidated/i.test(error.message)) updateNotice(null, true); }
+  }, 60_000);
+}
+void start();

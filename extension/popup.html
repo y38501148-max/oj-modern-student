@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OJ Modern Student</title>
+<link rel="stylesheet" href="popup.css">
+<body>
+  <header><img src="icons/48.png" width="40" height="40" alt=""><div><h1>OJ Modern Student</h1><p id="version">正在读取版本…</p></div></header>
+  <main>
+    <section aria-label="功能设置">
+      <label><span>界面美化</span><input type="checkbox" id="theme"></label>
+      <label><span>题面与样例复制</span><input type="checkbox" id="copy"></label>
+      <label><span>提交界面优化</span><input type="checkbox" id="submission"></label>
+      <p id="settings-status" role="status">修改设置后刷新 OJ 页面生效。</p>
+    </section>
+    <section aria-label="版本更新">
+      <p id="update-status" role="status">正在读取更新状态…</p>
+      <div class="actions"><button id="check" type="button">检查更新</button><a id="download" target="_blank" rel="noopener noreferrer" hidden>下载更新</a></div>
+      <p id="channel-help"></p>
+    </section>
+    <a class="primary" href="https://accoding.buaa.edu.cn/" target="_blank" rel="noopener noreferrer">打开 OJ</a>
+  </main>
+  <footer><a id="repository" target="_blank" rel="noopener noreferrer">GitHub</a><a id="installation" target="_blank" rel="noopener noreferrer">安装与更新说明</a></footer>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

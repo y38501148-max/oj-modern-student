@@ -1,0 +1,73 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { JSDOM } from 'jsdom';
+const source = await readFile(new URL('../extension/content.js',import.meta.url),'utf8');
+const pause = () => new Promise(resolve => setTimeout(resolve, 60));
+const statement = '<h1 class="problem-title">加法</h1><h2>输入样例1</h2><pre><code>  1\t2\n\n</code></pre><h2>输出样例1</h2><pre><code>3\n</code></pre>';
+function page(settings = {}, state = {}) {
+  const dom = new JSDOM(`<div id="page"><div class="col-lg-2"></div><div class="col-lg-8"><div class="markdown-body">${statement}</div></div><div class="col-lg-2"><div class="modal"><div class="modal-dialog"><form action="/problem/1/submit" method="post"><textarea name="code"></textarea><button type="submit">提交</button></form></div></div></div></div>`, { url:'https://accoding.buaa.edu.cn/problem/1/index',runScripts:'outside-only',pretendToBeVisual:true });
+  const copies = [], messages = [];
+  const observers = [];
+  const NativeObserver = dom.window.MutationObserver;
+  dom.window.MutationObserver = class extends NativeObserver { constructor(callback) { super(callback); observers.push(this); } };
+  dom.window.chrome = { runtime: { sendMessage: async msg => { messages.push(msg); return { version:'0.1.0',channel:'github',settings:{theme:true,copy:true,submission:true,...settings},update:{version:'0.1.0'},...state }; } } };
+  Object.defineProperty(dom.window.navigator,'clipboard',{value:{writeText:async text=>copies.push(text)}});
+  dom.window.eval(source);
+  return { dom, window:dom.window, document:dom.window.document, copies,messages, close:()=>{observers.forEach(o=>o.disconnect());dom.window.close();} };
+}
+test('复制样例保持所有空白，异步更换题面后只复制当前题', async () => {
+  const p = page(); await pause();
+  assert.equal(p.document.querySelectorAll('.oms-sample-copy').length,2);
+  p.document.querySelector('.oms-sample-copy').click(); await pause();
+  assert.equal(p.copies[0], '  1\t2\n\n');
+  const root = p.document.querySelector('.markdown-body');
+  root.innerHTML = '<h1 class="problem-title">第二题</h1><h2>输入样例</h2><pre>new\n</pre>';
+  await pause();
+  assert.equal(root.querySelectorAll('.oms-copybar').length,1);
+  assert.equal(root.querySelectorAll('.oms-sample-copy').length,1);
+  root.querySelector('.oms-sample-copy').click(); await pause();
+  assert.equal(p.copies[1], 'new\n');
+  p.close();
+});
+test('提交优化保留原表单，Tab 更新原 textarea 并派发 input，Esc+Tab 可离开', async () => {
+  const p = page(), textarea = p.document.querySelector('textarea'), form = textarea.form;
+  await pause();
+  assert.equal(textarea.form,form);
+  assert.equal(form.action,'https://accoding.buaa.edu.cn/problem/1/submit');
+  assert.equal(p.document.querySelectorAll('.oms-editor-tools').length,1);
+  p.document.querySelector('.modal').append(p.document.createElement('p'));
+  await pause();
+  assert.equal(p.document.querySelectorAll('.oms-editor-tools').length,1);
+  textarea.value = 'int main() {}'; textarea.setSelectionRange(0,0);
+  let received = 0; textarea.addEventListener('input',()=>received++);
+  textarea.dispatchEvent(new p.window.KeyboardEvent('keydown',{key:'Tab',bubbles:true,cancelable:true}));
+  assert.equal(textarea.value,'    int main() {}'); assert.equal(received,1);
+  textarea.dispatchEvent(new p.window.KeyboardEvent('keydown',{key:'Tab',shiftKey:true,bubbles:true,cancelable:true}));
+  assert.equal(textarea.value,'int main() {}'); assert.equal(received,2);
+  textarea.dispatchEvent(new p.window.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+  const escape = new p.window.KeyboardEvent('keydown',{key:'Tab',bubbles:true,cancelable:true});
+  textarea.dispatchEvent(escape); assert.equal(escape.defaultPrevented,false);
+  assert.equal(form.querySelector('button[type="submit"]').textContent,'提交');
+  p.close();
+});
+test('三项功能可以独立关闭', async () => {
+  const p = page({theme:false,copy:false,submission:false}); await pause();
+  assert.equal(p.document.documentElement.classList.contains('oms-theme'),false);
+  assert.equal(p.document.querySelectorAll('[data-oms-ui],.oms-editor').length,0);
+  p.close();
+});
+test('更新提示不刷新或改变编辑器，同版稍后不再显示', async () => {
+  const p = page({}, {update:{version:'0.2.0'}}); await pause();
+  const textarea = p.document.querySelector('textarea'); textarea.value = 'draft';
+  assert.match(p.document.querySelector('#oms-update').textContent,/0.2.0/);
+  assert.match(p.document.querySelector('#oms-update a').href,/\/releases\/latest$/);
+  [...p.document.querySelectorAll('#oms-update button')].find(n=>n.textContent==='稍后').click();
+  assert.equal(textarea.value,'draft');
+  assert.equal(p.document.querySelector('#oms-update'),null);
+  assert.ok(p.messages.some(msg=>msg.type==='dismiss'&&msg.version==='0.2.0'));
+  p.close();
+  const dismissed = page({}, {update:{version:'0.2.0'},dismissedVersion:'0.2.0'}); await pause();
+  assert.equal(dismissed.document.querySelector('#oms-update'),null);
+  dismissed.close();
+});

@@ -1,0 +1,24 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Check tag version
+        run: node --input-type=module -e "import fs from 'node:fs'; if ('v'+JSON.parse(fs.readFileSync('package.json')).version !== process.env.GITHUB_REF_NAME) process.exit(1)"
+      - run: npm run package
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/*.zip --title "OJ Modern Student $GITHUB_REF_NAME" --notes-file CHANGELOG.md

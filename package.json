@@ -1,0 +1,19 @@
+{
+  "name": "oj-modern-student",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "北航 Accoding 学生端浏览器扩展",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "package": "node scripts/package.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "npm run build && node scripts/check.mjs && npm test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "jsdom": "^27.0.1"
+  }
+}
