@@ -56,11 +56,23 @@ html.oms-theme { --oms-bg:#f5f7fb;--oms-line:#e6ebf2;--oms-ink:#26364d;--oms-mut
 .oms-theme .oms-submission-table .oms-pending-result { color:#8c6b1f!important;font-size:11px!important; }
 .oms-pending-dot { display:inline-block;width:5px;height:5px;margin-right:4px;border-radius:50%;background:currentColor;vertical-align:middle; }
 .oms-submit-status { margin:0 0 10px;color:#60718a;font-size:13px; }
-.oms-theme .oms-native-pagination { display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:20px 0; }
-.oms-theme .oms-native-pagination :is(.oms-pagination-button,.oms-pagination-current) { min-width:36px;margin:0!important;padding:7px 12px!important;border:1px solid #dce3ee!important;background:#fff!important;color:#52637e!important;font-size:13px!important;font-weight:400;border-radius:7px;box-shadow:none!important; }
-.oms-theme .oms-native-pagination .oms-pagination-current { border-color:#b8cefb!important;background:#edf3ff!important;color:#2563eb!important; }
-.oms-theme .oms-native-pagination .oms-pagination-button:not([disabled]):hover { border-color:#91b3f8!important;color:#2563eb!important;background:#f6f9ff!important; }
-.oms-theme .oms-native-pagination .oms-pagination-button[disabled] { opacity:1;color:#a3adbb!important;background:#f8fafc!important;cursor:not-allowed;pointer-events:none; }
+.oms-theme .oms-native-pagination { display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:24px 0; }
+.oms-theme #page .oms-native-pagination :is(.oms-pagination-button,.oms-pagination-current) { display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;margin:0!important;padding:9px 14px!important;border:1px solid #dce3ee!important;background:#fff!important;color:#52637e!important;font-size:15px!important;line-height:24px;font-weight:400;border-radius:8px;box-shadow:none!important;text-decoration:none; }
+.oms-theme #page .oms-native-pagination .oms-pagination-current { border-color:#2563eb!important;background:#2563eb!important;color:#fff!important; }
+.oms-theme #page .oms-native-pagination .oms-pagination-button:not([disabled]):not(.oms-pagination-current):hover { border-color:#91b3f8!important;color:#2563eb!important;background:#f6f9ff!important; }
+.oms-theme #page .oms-native-pagination .oms-pagination-button[disabled] { opacity:1;color:#a3adbb!important;background:#f8fafc!important;cursor:not-allowed;pointer-events:none; }
+.oms-contest-list-page #page>div[class*="col-"] { float:none;width:100%;min-width:0;padding:0; }
+.oms-contest-list-page #page h3 { margin:0 0 24px;font-size:28px; }
+.oms-contest-list-page #page h3>p { margin:10px 0 0;font-size:14px!important;font-weight:400;line-height:1.8;letter-spacing:0;color:#60718a!important; }
+.oms-theme #page .oms-contest-list-table { min-width:1120px;table-layout:fixed; }
+.oms-theme #page .oms-contest-list-table tr>td { padding:18px 16px!important;color:#26364d!important;font-size:16px!important;line-height:1.75;white-space:normal;text-align:left;overflow-wrap:anywhere; }
+.oms-theme #page .oms-contest-list-table tr.contest-title-tr>td { padding:14px 16px!important;background:#f8fafc;color:#60718a!important;font-size:15px!important;font-weight:600; }
+.oms-theme #page .oms-contest-list-table tr>td:first-child { width:84px; }
+.oms-theme #page .oms-contest-list-table tr>td:nth-child(2) { width:132px;white-space:nowrap; }
+.oms-theme #page .oms-contest-list-table tr>td:nth-child(4) { width:212px; }
+.oms-theme #page .oms-contest-list-table tr>td:nth-child(n+5) { width:188px;font-size:15px!important;font-variant-numeric:tabular-nums;white-space:nowrap; }
+.oms-theme #page .oms-contest-list-table label { margin:0;font-size:16px;font-weight:500; }
+.oms-theme #page .oms-contest-list-table a { line-height:1.75; }
 .oms-theme :is(.bluetd,.blue-td,.green-td) { color:#168267!important; }.oms-theme :is(.redtd,.red-td) { color:#b5505a!important; }
 .oms-theme :is(.panel,.well) { border:1px solid var(--oms-line);border-radius:10px;box-shadow:none;background:#fff;color:var(--oms-ink); }.oms-theme .panel-heading { background:#fafbfd!important;border-color:var(--oms-line);background-image:none!important; }
 .oms-theme #footer,.oms-theme #footer footer { position:static!important;inset:auto!important;z-index:auto!important;width:auto!important;height:auto!important;min-height:0!important;margin:0!important;padding:14px 0!important;background:transparent!important;color:#60718a!important;font-size:11px; }

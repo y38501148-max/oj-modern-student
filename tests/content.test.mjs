@@ -86,6 +86,17 @@ test('三项功能可以独立关闭', async () => {
   assert.equal(p.document.querySelectorAll('[data-oms-ui],.oms-editor').length,0);
   await p.close();
 });
+test('赛事链接分页标记当前页与禁用态，保留下一页地址',async()=>{
+  const p=page({}, {}, {url:'https://accoding.buaa.edu.cn/contest/index',html:'<div id="page"><div><h3>所有比赛</h3><table class="table"><tbody><tr class="contest-title-tr"><td>比赛ID</td><td>比赛状态</td><td>比赛标题</td><td>所属课程</td><td>开始时间</td><td>结束时间</td></tr><tr><td>1</td><td>进行中</td><td>练习赛</td><td>程序设计</td><td>开始</td><td>结束</td></tr></tbody></table></div><div><a href="./index?page=0" disabled class="button btn btn-default loginbtn btnstyle">上一页</a><a id="button1" href="./index?page=1" class="button btn btn-success">1</a><a href="./index?page=2" class="button btn btn-default">2</a><a id="next" href="./index?page=2" class="button btn btn-default loginbtn btnstyle">下一页</a></div></div>'});
+  await pause();
+  assert.equal(p.document.querySelector('#button1').getAttribute('aria-current'),'page');
+  assert.equal(p.document.querySelector('[disabled]').getAttribute('aria-disabled'),'true');
+  assert.equal(p.document.querySelector('[disabled]').getAttribute('tabindex'),'-1');
+  assert.equal(p.document.querySelector('#next').href,'https://accoding.buaa.edu.cn/contest/index?page=2');
+  assert.equal(p.document.querySelector('#next').parentElement.getAttribute('aria-label'),'分页');
+  assert.ok(p.document.querySelector('table').closest('.oms-table-wrap'));
+  await p.close();
+});
 test('更新提示不刷新或改变编辑器，同版稍后不再显示', async () => {
   const p = page({}, {update:{version:'0.2.0'}}); await pause();
   const textarea = p.document.querySelector('textarea'); textarea.value = 'draft';

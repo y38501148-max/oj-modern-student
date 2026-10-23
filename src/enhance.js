@@ -88,6 +88,7 @@ function enhance() {
   if (settings.theme) {
     ensureSubmissionView(text=>{void copyText(text);});
     ensureShell(chrome.runtime.getManifest().version);
+    if(location.pathname==='/contest/index')document.documentElement.classList.add('oms-contest-list-page');
     for (const page of document.querySelectorAll('#page,[ng-view]')) {
       const columns = [...page.children].filter(node => node.matches('div[class*="col-"]'));
       const inContest = document.documentElement.classList.contains('oms-contest-page');
@@ -112,17 +113,24 @@ function enhance() {
       }
     }
     for (const table of document.querySelectorAll('#page table.table,[ng-view] table.table')) {
+      if(table.querySelector('.contest-title-tr'))table.classList.add('oms-contest-list-table');
       if (table.closest('.oms-table-wrap,.modal,.markdown-body') || table.parentElement.closest('table')) continue;
       const wrap = el('div', 'oms-table-wrap'); table.before(wrap); wrap.append(table);
     }
     enhanceSubmissionHistory(document, location.href, mountScore);
     const history=ensurePersonalHistory();
     if(settings.submission && history)bindInlineSubmission(document.querySelector('#myModal form'),history);
-    for (const control of document.querySelectorAll('[onclick*="change_page("]')) {
+    for (const control of document.querySelectorAll('[onclick*="change_page("],#page a[href*="?page="],#page a[href*="&page="]')) {
+      if(control.hasAttribute('href') && !/^(上一页|下一页|首页|末页|尾页|\d+)$/.test(control.textContent.trim()))continue;
       control.classList.add('oms-pagination-button');
       const current=control.parentElement;
       current?.classList.add('oms-native-pagination');
-      for(const sibling of current?.children || []) if (sibling.matches('.btn-success')) {sibling.classList.add('oms-pagination-current');sibling.setAttribute('aria-current','page');}
+      current?.setAttribute('role','navigation');current?.setAttribute('aria-label','分页');
+      for(const sibling of current?.children || []) {
+        const selected=sibling.matches('.btn-success,.active');
+        sibling.classList.toggle('oms-pagination-current',selected);
+        if(selected)sibling.setAttribute('aria-current','page');else sibling.removeAttribute('aria-current');
+      }
       if(control.hasAttribute('disabled')) {control.setAttribute('aria-disabled','true');control.setAttribute('tabindex','-1');}
     }
   }
