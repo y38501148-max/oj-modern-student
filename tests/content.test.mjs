@@ -212,6 +212,13 @@ test('比赛分数悬停和键盘聚焦显示详情，重新评测后更新内�
   assert.match(p.document.querySelector('.oms-score-detail-message').textContent,/<script>alert\(1\)<\/script>/);
   assert.equal(p.document.querySelector('.oms-score-detail script'),null);
   assert.equal(p.document.querySelector('.oms-score-detail table'),null);
+  const nativeRow=p.document.querySelector('tbody tr').cloneNode(true);
+  nativeRow.querySelector('.oms-score-cell').remove();
+  p.document.querySelector('tbody').replaceChildren(nativeRow);await pause();
+  const restoredScore=nativeRow.querySelector('.oms-score-trigger');
+  assert.equal(restoredScore.textContent,'50');
+  restoredScore.click();await pause();
+  assert.match(p.document.querySelector('.oms-score-detail-message').textContent,/<script>alert\(1\)<\/script>/);
   await p.close();
 });
 

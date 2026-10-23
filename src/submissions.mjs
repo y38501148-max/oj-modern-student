@@ -26,20 +26,29 @@ export function enhanceSubmissionHistory(document, href, renderScore, fetcher = 
     const signature = contest[1] + ':' + rows.map(({id,row})=>id+':'+[...row.cells].filter(cell=>!cell.classList.contains('oms-score-cell')).map(cell=>cell.textContent.trim()).join(',')).join('|');
     let state = histories.get(table);
     if (!state) { state={signature:'',loading:false}; histories.set(table,state); }
-    if (!rows.length || state.loading || signature===state.signature) continue;
+    if (!rows.length || state.loading) continue;
+    if (signature===state.signature) {
+      for (const {id,row} of rows) {
+        const cell=row.querySelector('.oms-score-cell');
+        if (state.rendered.has(cell)) continue;
+        renderScore(cell,state.submissions.get(id) || {score:null,error:state.error});
+        state.rendered.add(cell);
+      }
+      continue;
+    }
     state.signature=signature; state.loading=true;
     void (async()=>{
       try {
         const response = await fetcher(`/api/contests/${contest[1]}/submissions`, {credentials:'same-origin'});
         if (!response.ok) throw Error('分数读取失败');
-        const submissions = new Map((await response.json()).map(submission=>[String(submission.id),submission]));
-        for (const {id,row} of rows) {
-          if (!row.isConnected) continue;
-          renderScore(row.querySelector('.oms-score-cell'),submissions.get(id) || {score:null});
-        }
+        state.submissions = new Map((await response.json()).map(submission=>[String(submission.id),submission]));
+        state.error=undefined;
       } catch {
-        for (const {row} of rows)if(row.isConnected)renderScore(row.querySelector('.oms-score-cell'),{score:null,error:'分数读取失败，刷新页面重试'});
-      } finally { state.loading=false; enhanceSubmissionHistory(document,document.location.href,renderScore,fetcher); }
+        state.submissions=new Map();state.error='分数读取失败，刷新页面重试';
+      } finally {
+        state.rendered=new WeakSet();state.loading=false;
+        enhanceSubmissionHistory(document,document.location.href,renderScore,fetcher);
+      }
     })();
   }
 }

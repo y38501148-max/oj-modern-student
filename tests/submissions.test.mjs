@@ -30,3 +30,21 @@ test('分数按百分制最多保留两位小数，长小数不会挤占相邻�
   assert.equal(formatScore(0),'0');
   assert.equal(formatScore(null),'—');
 });
+for (const replaceDuringRequest of [false,true]) test(`原站${replaceDuringRequest?'加载途中':'加载完成后'}重建相同记录，仍显示分数和详情`,async()=>{
+  const dom=new JSDOM(`<div ng-view><div><table class="table"><thead><tr><th>ID</th><th>结果</th><th>时间</th><th>内存</th></tr></thead><tbody>${row(1,'AC')}</tbody></table></div></div>`,{url:href});
+  const document=dom.window.document;
+  let resolveResponse,requests=0;
+  const response=new Promise(resolve=>{resolveResponse=resolve;});
+  const fetcher=()=>{requests++;return response;};
+  const finish=()=>resolveResponse({ok:true,json:async()=>[{id:1,score:1,detail:'1\nAccepted | 1 * (1 / 1) | 5 ms | 1024 KB'}]});
+  enhanceSubmissionHistory(document,href,renderScore,fetcher);
+  if(!replaceDuringRequest){finish();await settle();}
+  document.querySelector('tbody').innerHTML=row(1,'AC');
+  enhanceSubmissionHistory(document,href,renderScore,fetcher);
+  if(replaceDuringRequest)finish();
+  await settle();
+  const cell=document.querySelector('tbody .oms-score-cell');
+  assert.equal(cell.textContent,'100');assert.match(cell.dataset.detail,/Accepted/);
+  assert.equal(requests,1);
+  dom.window.close();
+});

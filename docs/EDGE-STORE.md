@@ -4,7 +4,7 @@
 
 ## 提交文件
 
-运行 `npm run package` 后上传 `dist/oj-modern-student-edge-0.2.7.zip`。`manifest.json` 位于 ZIP 根目录，后台和面板均使用本地模块，功能代码随包分发。
+运行 `npm run package` 后上传 `dist/oj-modern-student-edge-0.2.8.zip`。`manifest.json` 位于 ZIP 根目录，后台和面板均使用本地模块，功能代码随包分发。
 
 ## 商店文案
 
