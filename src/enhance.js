@@ -44,6 +44,30 @@ function enhanceStatement(root) {
     }
   }
 }
+function enhanceContestList(table) {
+  table.classList.add('oms-contest-list-table');
+  for(const row of [...table.rows].slice(1)) {
+    const status=row.cells[1]?.querySelector('label');
+    if(status) {
+      const text=status.textContent.trim();
+      const state=/进行/.test(text)?'live':/即将|未开始/.test(text)?'upcoming':/结束/.test(text)?'ended':'';
+      status.classList.add('oms-contest-status');
+      for(const name of ['live','upcoming','ended'])status.classList.toggle('oms-contest-'+name,state===name);
+      const label={live:'进行中',upcoming:'未开始',ended:'已结束'}[state];
+      if(label && text!==label)status.textContent=label;
+    }
+    for(const index of [2,3])for(const link of row.cells[index]?.querySelectorAll('a') || []) {
+      link.classList.add(index===2?'oms-contest-title':'oms-contest-course');link.title=link.textContent.trim();
+    }
+    for(const cell of [...row.cells].slice(4,6)) {
+      if(cell.querySelector('.oms-contest-date'))continue;
+      const value=cell.textContent.trim(),date=value.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}:\d{2})$/);
+      if(!date)continue;
+      const stamp=el('time','oms-contest-date');stamp.dateTime=date[1]+'T'+date[2];stamp.title=value;
+      stamp.append(el('span','',date[1]),document.createTextNode(' '),el('span','oms-contest-time',date[2]));cell.replaceChildren(stamp);
+    }
+  }
+}
 function enhanceEditor(textarea) {
   if ('omsEditor' in textarea.dataset) return;
   textarea.dataset.omsEditor = '';
@@ -113,7 +137,7 @@ function enhance() {
       }
     }
     for (const table of document.querySelectorAll('#page table.table,[ng-view] table.table')) {
-      if(table.querySelector('.contest-title-tr'))table.classList.add('oms-contest-list-table');
+      if(table.querySelector('.contest-title-tr'))enhanceContestList(table);
       if (table.closest('.oms-table-wrap,.modal,.markdown-body') || table.parentElement.closest('table')) continue;
       const wrap = el('div', 'oms-table-wrap'); table.before(wrap); wrap.append(table);
     }

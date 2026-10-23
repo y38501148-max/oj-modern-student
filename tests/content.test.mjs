@@ -97,6 +97,20 @@ test('赛事链接分页标记当前页与禁用态，保留下一页地址',asy
   assert.ok(p.document.querySelector('table').closest('.oms-table-wrap'));
   await p.close();
 });
+test('赛事状态与时间分层展示，保留完整标题和精确时间',async()=>{
+  const p=page({}, {}, {url:'https://accoding.buaa.edu.cn/contest/index',html:'<div id="page"><table class="table"><tbody><tr class="contest-title-tr"><td>ID</td><td>状态</td><td>标题</td><td>课程</td><td>开始</td><td>结束</td></tr><tr><td>1331</td><td><label class="redtd">正在进行中…</label></td><td><a href="/contest-ng/index.html#/1331">程序设计基础第五次练习赛</a></td><td><a href="/group/7/index">2026级程序设计基础</a></td><td>2026-10-22 08:00:00</td><td>2026-10-25 23:50:00</td></tr></tbody></table></div>'});
+  await pause();
+  assert.equal(p.document.querySelector('.oms-contest-status').textContent,'进行中');
+  assert.equal(p.document.querySelector('.oms-contest-title').title,'程序设计基础第五次练习赛');
+  assert.equal(p.document.querySelector('.oms-contest-title').getAttribute('href'),'/contest-ng/index.html#/1331');
+  const time=p.document.querySelector('.oms-contest-date');
+  assert.equal(time.dateTime,'2026-10-22T08:00:00');
+  assert.equal(time.textContent,'2026-10-22 08:00:00');
+  assert.equal(time.title,'2026-10-22 08:00:00');
+  p.document.querySelector('#page').append(p.document.createElement('p'));await pause();
+  assert.equal(p.document.querySelectorAll('.oms-contest-date').length,2);
+  await p.close();
+});
 test('更新提示不刷新或改变编辑器，同版稍后不再显示', async () => {
   const p = page({}, {update:{version:'0.2.0'}}); await pause();
   const textarea = p.document.querySelector('textarea'); textarea.value = 'draft';
