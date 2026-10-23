@@ -1,8 +1,13 @@
 # Edge Add-ons 上架材料
 
-状态（2026-10-23）：个人开发者账号已通过验证，发布者名称为 `muzermat`。扩展草稿已创建，0.2.8 包已通过校验，现更新为含简体中文语言标记的 0.2.9 包；商店资料正在填写，尚未提交审核。
+状态（2026-10-23）：0.2.9 已提交审核，Partner Center 显示 **In review**，提示预计 7 个工作日内反馈。个人开发者账号已通过验证，发布者名称为 `muzermat`。分类为 Developer Tools，公开分发，商店语言为简体中文。
 
-Partner Center 草稿 ID：`5afd8ef8-e691-4291-bebc-c17a7e3efd7a`。后台入口：[OJ Modern Student](https://partner.microsoft.com/en-us/dashboard/microsoftedge/5afd8ef8-e691-4291-bebc-c17a7e3efd7a/packages)。草稿 ID 不是商店安装链接，README 暂不添加商店地址。
+Partner Center 商品 ID：`5afd8ef8-e691-4291-bebc-c17a7e3efd7a`。后台入口：[OJ Modern Student](https://partner.microsoft.com/en-us/dashboard/microsoftedge/5afd8ef8-e691-4291-bebc-c17a7e3efd7a/packages/dashboard)。
+
+- Store ID：`0RDCKF3RPSRX`
+- CRX ID：`pddopmfbakkmmpfdnoafekibhmfdgago`
+- 商店 URL：后台提示通过审核并发布后才会提供，README 暂不添加安装链接。
+- 已提交中文介绍、扩展标志、搜索词、权限说明和隐私政策；审核说明使用英文，注明需要 Accoding 账号的功能及联系邮箱，未提供专用 OJ 测试账号。
 
 ## 提交文件
 
@@ -22,7 +27,7 @@ Partner Center 草稿 ID：`5afd8ef8-e691-4291-bebc-c17a7e3efd7a`。后台入口
 
 详细说明：
 
-> OJ Modern Student 用于北航 Accoding 学生端，为浏览课程、阅读题目和提交代码提供更清楚的界面。安装后打开 https://accoding.buaa.edu.cn/ 即可使用。
+> OJ Modern Student 用于北航 Accoding 学生端，为浏览课程、阅读题目和提交代码提供更清楚的界面。安装后打开北航 Accoding 网站即可使用。
 >
 > 首页与课程：统一导航和表格样式，课程支持搜索、分组展开，以及进行中和以往课程切换。赛事列表区分比赛标题、课程和时间，长名称可悬停查看全文。
 >

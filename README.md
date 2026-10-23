@@ -28,7 +28,7 @@
 
 ### Edge
 
-Edge Add-ons 商店版待上架，暂按下面的方式安装，将地址改为 `edge://extensions` 即可。上架材料见 [Edge 商店发布](docs/EDGE-STORE.md)。
+0.2.9 已提交 Edge Add-ons 审核，商店链接将在通过后补充。目前可按下面的方式安装，将地址改为 `edge://extensions` 即可。上架进度见 [Edge 商店发布](docs/EDGE-STORE.md)。
 
 
 ### Chrome：从 GitHub 安装
