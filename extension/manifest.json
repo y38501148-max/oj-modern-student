@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "OJ Modern Student",
-  "version": "0.2.8",
-  "description": "北航 Accoding 学生端：界面美化、文本与代码复制、提交界面优化。",
+  "name": "__MSG_extensionName__",
+  "version": "0.2.9",
+  "description": "__MSG_extensionDescription__",
+  "default_locale": "zh_CN",
   "homepage_url": "https://github.com/y38501148-max/oj-modern-student",
   "permissions": [
     "storage",

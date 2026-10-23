@@ -4,7 +4,7 @@
 
 该插件由个人开发，与北航程序设计课程组无关。
 
-当前版本：**0.2.8** · Manifest V3 · 桌面 Edge / Chrome。
+当前版本：**0.2.9** · Manifest V3 · 桌面 Edge / Chrome。
 
 ## 功能
 

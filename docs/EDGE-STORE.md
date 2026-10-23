@@ -1,10 +1,12 @@
 # Edge Add-ons 上架材料
 
-状态（2026-10-23）：0.2.8 商店包已准备好。已进入当前 Microsoft 账号的 Edge 开发者注册页；需要补充发布者名称、联系人地址和电话，完成注册后才能上传扩展。目前尚未提交商店，未取得商店 ID。
+状态（2026-10-23）：个人开发者账号已通过验证，发布者名称为 `muzermat`。扩展草稿已创建，0.2.8 包已通过校验，现更新为含简体中文语言标记的 0.2.9 包；商店资料正在填写，尚未提交审核。
+
+Partner Center 草稿 ID：`5afd8ef8-e691-4291-bebc-c17a7e3efd7a`。后台入口：[OJ Modern Student](https://partner.microsoft.com/en-us/dashboard/microsoftedge/5afd8ef8-e691-4291-bebc-c17a7e3efd7a/packages)。草稿 ID 不是商店安装链接，README 暂不添加商店地址。
 
 ## 提交文件
 
-运行 `npm run package` 后上传 `dist/oj-modern-student-edge-0.2.8.zip`。`manifest.json` 位于 ZIP 根目录，后台和面板均使用本地模块，功能代码随包分发。
+运行 `npm run package` 后上传 `dist/oj-modern-student-edge-0.2.9.zip`。`manifest.json` 位于 ZIP 根目录，后台和面板均使用本地模块，功能代码随包分发。安装包通过 `_locales/zh_CN/messages.json` 声明简体中文名称与说明。
 
 ## 商店文案
 

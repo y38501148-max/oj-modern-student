@@ -11,8 +11,8 @@ const { version } = JSON.parse(await readFile(resolve(root, 'package.json')));
 if (!/^\d+\.\d+\.\d+$/.test(version)) throw Error('版本号须为 x.y.z');
 await mkdir(out, { recursive: true });
 const manifest = {
-  manifest_version: 3, name: 'OJ Modern Student', version,
-  description: '北航 Accoding 学生端：界面美化、文本与代码复制、提交界面优化。',
+  manifest_version: 3, name: '__MSG_extensionName__', version,
+  description: '__MSG_extensionDescription__', default_locale: 'zh_CN',
   homepage_url: 'https://github.com/y38501148-max/oj-modern-student',
   permissions: ['storage','alarms','clipboardWrite'],
   host_permissions: ['https://raw.githubusercontent.com/*'],
@@ -26,6 +26,11 @@ const manifest = {
   content_security_policy: { extension_pages: "script-src 'self'; object-src 'self'" }
 };
 await writeFile(resolve(out, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+await mkdir(resolve(out,'_locales/zh_CN'), {recursive:true});
+await writeFile(resolve(out,'_locales/zh_CN/messages.json'),JSON.stringify({
+  extensionName:{message:'OJ Modern Student'},
+  extensionDescription:{message:'北航 Accoding 学生端：界面美化、文本与代码复制、提交界面优化。'},
+},null,2)+'\n');
 await writeFile(resolve(out, 'config.js'), `export const CHANNEL = '${channel}';\n`);
 for (const entry of ['content','popup']) {
   await build({
