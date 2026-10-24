@@ -11,7 +11,7 @@ Partner Center 商品 ID：`5afd8ef8-e691-4291-bebc-c17a7e3efd7a`。后台入口
 
 ## 提交文件
 
-运行 `npm run package` 后上传 `dist/oj-modern-student-edge-0.2.9.zip`。`manifest.json` 位于 ZIP 根目录，后台和面板均使用本地模块，功能代码随包分发。安装包通过 `_locales/zh_CN/messages.json` 声明简体中文名称与说明。
+运行 `npm run package` 后生成 `dist/oj-modern-student-edge-0.2.10.zip`。`manifest.json` 位于 ZIP 根目录，后台和面板均使用本地模块，功能代码随包分发。安装包通过 `_locales/zh_CN/messages.json` 声明简体中文名称与说明。
 
 ## 商店文案
 

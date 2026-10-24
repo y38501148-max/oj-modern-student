@@ -14,3 +14,5 @@ Unmodified upstream files, concatenated in this order:
 Bundled to render formulas through the VPN without CDN scripts or web fonts. Apache-2.0; see LICENSE.
 
 Font `Main.js` files must precede glyph tables such as `BasicLatin.js`: they assign the font object, while glyph tables extend it. Loading `Main.js` afterwards discards those glyphs.
+
+`src/math-layout.js` removes lazy font ranges after loading this complete bundle. Otherwise, a missing glyph such as a fullwidth comma can revisit an already loaded range and fail inside `findBlock`, instead of reaching the SVG missing-glyph fallback. Upstream bundle files remain unchanged.

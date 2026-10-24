@@ -1,7 +1,9 @@
 (() => {
   document.querySelector('#oms-math-bootstrap')?.remove();
+  // All SVG glyph tables are bundled; lazy ranges must not reload them for missing glyphs.
+  for(const font of Object.values(window.MathJax.OutputJax.SVG.FONTDATA.FONTS))if(font && typeof font==='object')delete font.Ranges;
   const selector='.markdown-body:not(textarea)';
-  const mathSelector='.MathJax_SVG,.MathJax_SVG_Display,.MathJax_Preview,.MJX_Assistive_MathML,[id^="MathJax-"]';
+  const mathSelector='.MathJax_SVG,.MathJax_SVG_Display,.MathJax_SVG_test,.MathJax_Error,.MathJax_Preview,.MJX_Assistive_MathML,[id^="MathJax-"]';
   const pending=new Set();
   let timer,working=false;
   function schedule(node) {
