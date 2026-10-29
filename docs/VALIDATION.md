@@ -1,3 +1,16 @@
+# Edge 商店更新提交
+
+日期：2026-10-29。
+
+- Partner Center 确认 0.2.9 为 Live；公开商店页面显示 OJ Modern Student、发布者 muzermat 和版本 0.2.9。
+- 最新 GitHub Release 为 v0.2.10。下载 Edge 发布包后核对 SHA-256 与 Release 元数据一致：`13c4b7c4168ea1ab5bb1b832a90886ed752164a345b7c308bfbe42f6b36a0f7b`。
+- ZIP 完整性检查通过；根目录 manifest 版本为 0.2.10、Manifest V3、默认语言为 zh_CN，更新通道为 edge。
+- 重新运行 `npm run check`，类型检查、构建、资源与语法检查及 31 项测试全部通过。
+- 上传 0.2.10 包，商店校验状态为 Complete；提交英文审核说明后，Partner Center 显示 0.2.10 为 In review，0.2.9 继续为 Live。
+- README 已补充正式商店安装链接、自动更新说明，以及已上架版本与待审版本的区别。本次未验证真实商店安装或自动更新到 0.2.10。
+
+---
+
 # 0.2.10 验证记录
 
 日期：2026-10-24。

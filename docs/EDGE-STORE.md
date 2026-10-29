@@ -1,17 +1,19 @@
 # Edge Add-ons 上架材料
 
-状态（2026-10-23）：0.2.9 已提交审核，Partner Center 显示 **In review**，提示预计 7 个工作日内反馈。个人开发者账号已通过验证，发布者名称为 `muzermat`。分类为 Developer Tools，公开分发，商店语言为简体中文。
+状态（2026-10-29）：**0.2.9 已通过审核并上架（Live）**，公开商店页面可访问。最新版本 **0.2.10 已提交更新审核（In review）**，Partner Center 提示预计 7 个工作日内反馈；审核完成并上线后，Edge 将自动更新商店安装版。个人开发者账号已通过验证，发布者名称为 `muzermat`。分类为 Developer Tools，公开分发，商店语言为简体中文。
 
 Partner Center 商品 ID：`5afd8ef8-e691-4291-bebc-c17a7e3efd7a`。后台入口：[OJ Modern Student](https://partner.microsoft.com/en-us/dashboard/microsoftedge/5afd8ef8-e691-4291-bebc-c17a7e3efd7a/packages/dashboard)。
 
 - Store ID：`0RDCKF3RPSRX`
 - CRX ID：`pddopmfbakkmmpfdnoafekibhmfdgago`
-- 商店 URL：后台提示通过审核并发布后才会提供，README 暂不添加安装链接。
-- 已提交中文介绍、扩展标志、搜索词、权限说明和隐私政策；审核说明使用英文，注明需要 Accoding 账号的功能及联系邮箱，未提供专用 OJ 测试账号。
+- 商店 URL：[OJ Modern Student · Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/pddopmfbakkmmpfdnoafekibhmfdgago)。
+- 已提交中文介绍、扩展标志、搜索词、权限说明和隐私政策；审核说明使用英文，注明需要 Accoding 账号的功能及支持入口，未提供专用 OJ 测试账号。
 
 ## 提交文件
 
 运行 `npm run package` 后生成 `dist/oj-modern-student-edge-0.2.10.zip`。`manifest.json` 位于 ZIP 根目录，后台和面板均使用本地模块，功能代码随包分发。安装包通过 `_locales/zh_CN/messages.json` 声明简体中文名称与说明。
+
+2026-10-29 提交的更新包直接取自 [GitHub v0.2.10 Release](https://github.com/y38501148-max/oj-modern-student/releases/tag/v0.2.10)，文件名为 `oj-modern-student-edge-0.2.10.zip`，SHA-256 为 `13c4b7c4168ea1ab5bb1b832a90886ed752164a345b7c308bfbe42f6b36a0f7b`。上传后商店校验状态为 Complete，版本识别为 0.2.10，语言为 Chinese (China)。本次审核说明补充了公式修复内容和测试步骤，并说明个人提交、评测与提交流程需要原站账号；权限和数据处理方式沿用 0.2.9。
 
 ## 商店文案
 
@@ -81,6 +83,6 @@ Partner Center 商品 ID：`5afd8ef8-e691-4291-bebc-c17a7e3efd7a`。后台入口
 2. 发布 GitHub Release，取得 `edge` ZIP。
 3. 在 Partner Center 更新现有商品，上传新包并提交审核。
 4. 商店上线后浏览器负责更新；GitHub 版本提示不代表商店已完成审核。
-5. 首次上架成功后，将 README 的“待上架”替换为真实商店链接。
+5. 核对公开商店页面的版本，同步 README 和本文的发布状态。
 
 官方参考：[发布扩展](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension)、[注册开发者账号](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/create-dev-account)、[更新扩展](https://learn.microsoft.com/en-us/microsoft-edge/extensions/update/update-extension)。

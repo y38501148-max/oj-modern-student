@@ -28,8 +28,11 @@
 
 ### Edge
 
-0.2.9 已提交 Edge Add-ons 审核，商店链接将在通过后补充。目前可按下面的方式安装，将地址改为 `edge://extensions` 即可。上架进度见 [Edge 商店发布](docs/EDGE-STORE.md)。
+在 [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/pddopmfbakkmmpfdnoafekibhmfdgago) 点击**获取**，安装后打开或刷新 <https://accoding.buaa.edu.cn/>。商店版由 Edge 自动更新，版本与审核进度见 [Edge 商店发布](docs/EDGE-STORE.md)。
 
+截至 2026-10-29，商店已上架 **0.2.9**，最新版本 **0.2.10** 已提交审核；审核完成并上线后，商店版会自动更新。
+
+也可按下方 GitHub 安装步骤手动加载，将扩展管理地址改为 `edge://extensions`。手动安装版需要自行下载和替换新版文件。
 
 ### Chrome：从 GitHub 安装
 
@@ -45,7 +48,7 @@
 
 有新版时，OJ 页面会出现提示，扩展图标上显示 `NEW`。点击“稍后”可收起该版本的页面提醒，扩展面板中仍能查看更新。
 
-Chrome 手动安装版需要下载新 ZIP，用新文件替换原目录，再到 `chrome://extensions` 点击“重新加载”。保留原目录路径，以便沿用扩展设置。刷新 OJ 前先保存正在编辑的代码。
+从 GitHub 手动安装的 Edge / Chrome 版本需要下载新 ZIP，用新文件替换原目录，再到 `edge://extensions` 或 `chrome://extensions` 点击“重新加载”。保留原目录路径，以便沿用扩展设置。刷新 OJ 前先保存正在编辑的代码。
 
 Edge 商店版由浏览器自动更新。GitHub 发布可能早于商店上架，页面提示会注明这一点。
 
